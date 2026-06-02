@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nobel Prize Visualization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./国家/style/d3-design-system-cool.css">
+<style>
+:root {
+  --physics: var(--c3);
+  --chemistry: var(--c1);
+  --medicine: var(--c2);
+  --gold: #B7791F;
+  --surface-2: var(--surface2);
+  --border-strong: var(--border2);
+  --text-muted: var(--text2);
+  --text-soft: var(--text3);
+  --shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.28) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+#app-shell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.topbar {
+  min-height: 72px;
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto minmax(280px, 1fr);
+  align-items: center;
+  gap: 20px;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  position: relative;
+  z-index: 20;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: block;
+  flex: 0 0 auto;
+  object-fit: cover;
+  background: var(--surface-2);
+  box-shadow: 0 8px 18px rgba(151, 90, 22, 0.18);
+}
+
+.brand-kicker {
+  margin: 0 0 2px;
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--text-soft);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.brand-title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  background: #EEF2F7;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.tab-btn {
+  height: 38px;
+  min-width: 124px;
+  padding: 0 16px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 650;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.tab-btn.active {
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #F8FAFC;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  min-width: 140px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.field-label {
+  font-size: 10px;
+  color: var(--text-soft);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.filter-select {
+  height: 22px;
+  min-width: 0;
+  padding: 0 20px 0 0;
+  color: var(--text);
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-soft) 50%), linear-gradient(135deg, var(--text-soft) 50%, transparent 50%);
+  background-position: calc(100% - 9px) 7px, calc(100% - 4px) 7px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  font-size: 14px;
+  font-weight: 650;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.filter-select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.filter-badge {
+  min-width: 52px;
+  height: 32px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-family: var(--body);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.summary-bar {
+  display: none;
+  height: 44px;
+  grid-template-columns: repeat(5, auto);
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 0 24px;
+  background: rgba(255, 255, 255, 0.72);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 15;
+}
+
+.summary-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.summary-value {
+  color: var(--text);
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.workspace {
+  min-height: 0;
+  padding: 16px;
+}
+
+.viewport {
+  height: 100%;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+}
+
+.panel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.panel.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  opacity: 0;
+  background: var(--surface);
+  transition: opacity 0.25s ease;
+}
+
+.panel iframe.loaded {
+  opacity: 1;
+}
+
+.loading-wrap {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  align-content: center;
+  background: var(--surface);
+  z-index: 5;
+  transition: opacity 0.25s ease;
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+  font-family: var(--body);
+  color: var(--text-soft);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.status-bar {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 0 18px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  color: var(--text-soft);
+  font-family: var(--body);
+  font-size: 12px;
+  position: relative;
+  z-index: 20;
+}
+
+.discipline-tags {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.discipline-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+}
+
+.discipline-tag::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+@media (max-width: 1100px) {
+  .topbar {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .tabs {
+    justify-content: stretch;
+  }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .filters {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    overflow: auto;
+  }
+
+  #app-shell {
+    min-height: 100vh;
+    height: auto;
+    grid-template-rows: auto auto 70vh auto;
+  }
+
+  .topbar {
+    padding: 12px;
+  }
+
+  .brand-title {
+    white-space: normal;
+    font-size: 16px;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .tab-btn {
+    flex: 0 0 auto;
+    min-width: 104px;
+  }
+
+  .field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    flex: 1 1 132px;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .summary-bar {
+    height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    gap: 8px 14px;
+    padding: 10px 12px;
+  }
+
+  .summary-item {
+    justify-content: space-between;
+  }
+
+  .workspace {
+    padding: 10px;
+  }
+
+  .status-bar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 8px 12px;
+  }
+}
+</style>
+</head>
+<body>
+<div id="app-shell">
+  <header class="topbar">
+    <div class="brand" aria-label="Nobel Prize Visualization">
+      <img class="brand-mark" src="./nobel.jpg" alt="Nobel Prize">
+      <div>
+        <p class="brand-kicker">1900-2016 Data Dashboard</p>
+        <h1 class="brand-title">Nobel Prize Visualization</h1>
+      </div>
+    </div>
+
+    <nav class="tabs" aria-label="Visualization sections">
+      <button class="tab-btn active" data-tab="geo" type="button">全球分布</button>
+      <button class="tab-btn" data-tab="laureates" type="button">得主探索</button>
+      <button class="tab-btn" data-tab="pub" type="button">发文周期</button>
+    </nav>
+
+    <div class="filters" aria-label="Global filters">
+      <label class="field">
+        <span class="field-label">学科</span>
+        <select id="filter-discipline" class="filter-select">
+          <option value="all">全部学科</option>
+          <option value="Physics">Physics</option>
+          <option value="Chemistry">Chemistry</option>
+          <option value="Medicine">Medicine</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span class="field-label">年代</span>
+        <select id="filter-year" class="filter-select">
+          <option value="all">全部年份</option>
+          <option value="1900-1950">1900-1950</option>
+          <option value="1950-2000">1950-2000</option>
+          <option value="2000-2016">2000-2016</option>
+        </select>
+      </label>
+
+      <div id="filter-badge" class="filter-badge" aria-live="polite"></div>
+    </div>
+  </header>
+
+  <section class="summary-bar" aria-label="Dataset summary">
+    <div class="summary-item"><span class="summary-value">545</span><span>位得主</span></div>
+    <div class="summary-item"><span class="summary-value">93.4k</span><span>篇论文</span></div>
+    <div class="summary-item"><span>平均等待</span><span class="summary-value">17</span><span>年</span></div>
+    <div class="summary-item"><span class="summary-value">874</span><span>获奖论文关联</span></div>
+    <div class="summary-item"><span class="summary-value">1900-2016</span></div>
+  </section>
+
+  <main class="workspace">
+    <section class="viewport" aria-label="Visualization frame">
+      <div class="panel active" id="panel-geo">
+        <div class="loading-wrap" id="loading-geo">
+          <div class="spinner"></div>
+          <div class="loading-text">Loading</div>
+        </div>
+        <iframe id="iframe-geo" title="全球分布" src="./国家/nobel_prize_visualization.html" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+      </div>
+
+      <div class="panel" id="panel-laureates">
+        <div class="loading-wrap" id="loading-laureates">
+          <div class="spinner"></div>
+          <div class="loading-text">Loading</div>
+        </div>
+        <iframe id="iframe-laureates" title="得主探索" src="./作者/merged/index.html" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"></iframe>
+      </div>
+
+      <div class="panel" id="panel-pub">
+        <div class="loading-wrap" id="loading-pub">
+          <div class="spinner"></div>
+          <div class="loading-text">Loading</div>
+        </div>
+        <iframe id="iframe-pub" title="发文周期" src="./nobel-year/nobel-year/nobel_unified.html" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer class="status-bar">
+    <span>数据来源：Microsoft Academic Graph · 545 位得主 · Physics · Chemistry · Medicine · 1900-2016</span>
+    <div class="discipline-tags" aria-label="Discipline colors">
+      <span class="discipline-tag" style="color: var(--physics)">Physics</span>
+      <span class="discipline-tag" style="color: var(--chemistry)">Chemistry</span>
+      <span class="discipline-tag" style="color: var(--medicine)">Medicine</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+const TAB_MAP = {
+  geo: { panel: "panel-geo", iframe: "iframe-geo", loading: "loading-geo" },
+  laureates: { panel: "panel-laureates", iframe: "iframe-laureates", loading: "loading-laureates" },
+  pub: { panel: "panel-pub", iframe: "iframe-pub", loading: "loading-pub" }
+};
+
+let activeTab = "geo";
+const iframeReady = { geo: false, laureates: false, pub: false };
+const pendingFilters = { geo: null, laureates: null, pub: null };
+
+const discSel = document.getElementById("filter-discipline");
+const yearSel = document.getElementById("filter-year");
+const badge = document.getElementById("filter-badge");
+
+function getFilters() {
+  return { disc: discSel.value, year: yearSel.value };
+}
+
+function switchTab(name) {
+  if (name === activeTab) return;
+
+  document.querySelectorAll(".tab-btn").forEach((button) => {
+    button.classList.toggle("active", button.dataset.tab === name);
+  });
+
+  document.getElementById(TAB_MAP[activeTab].panel).classList.remove("active");
+  document.getElementById(TAB_MAP[name].panel).classList.add("active");
+  activeTab = name;
+
+  requestAnimationFrame(() => applyToTab(name, getFilters()));
+}
+
+document.querySelectorAll(".tab-btn").forEach((button) => {
+  button.addEventListener("click", () => switchTab(button.dataset.tab));
+});
+
+Object.entries(TAB_MAP).forEach(([tab, cfg]) => {
+  const iframe = document.getElementById(cfg.iframe);
+  const loading = document.getElementById(cfg.loading);
+
+  iframe.addEventListener("load", () => {
+    iframeReady[tab] = true;
+    iframe.classList.add("loaded");
+    hideLoading(loading);
+
+    if (pendingFilters[tab]) {
+      setTimeout(() => {
+        applyToTab(tab, pendingFilters[tab]);
+        pendingFilters[tab] = null;
+      }, 300);
+    }
+  });
+
+  setTimeout(() => {
+    if (!iframeReady[tab]) {
+      iframeReady[tab] = true;
+      iframe.classList.add("loaded");
+      hideLoading(loading);
+    }
+  }, 15000);
+});
+
+
+function hideLoading(loading) {
+  loading.style.opacity = "0";
+  loading.style.pointerEvents = "none";
+  setTimeout(() => {
+    loading.style.display = "none";
+  }, 280);
+}
+
+function updateBadge(f) {
+  const parts = [];
+  if (f.disc !== "all") parts.push(f.disc);
+  if (f.year !== "all") parts.push(f.year);
+
+  if (parts.length) {
+    badge.textContent = parts.join(" · ");
+    badge.style.display = "inline-flex";
+  } else {
+    badge.textContent = "";
+    badge.style.display = "none";
+  }
+}
+
+function onFilterChange() {
+  const filters = getFilters();
+  updateBadge(filters);
+  ["geo", "laureates", "pub"].forEach((tab) => applyToTab(tab, filters));
+}
+
+discSel.addEventListener("change", onFilterChange);
+yearSel.addEventListener("change", onFilterChange);
+
+function applyToTab(tab, filters) {
+  if (!iframeReady[tab]) {
+    pendingFilters[tab] = filters;
+    return;
+  }
+
+  const iframe = document.getElementById(TAB_MAP[tab].iframe);
+
+  try {
+    const win = iframe.contentWindow;
+    const doc = iframe.contentDocument;
+    if (!win || !doc) return;
+
+    if (tab === "geo") applyToGeo(win, doc, filters);
+    if (tab === "laureates") applyToLaureates(win, doc, filters);
+    if (tab === "pub") applyToPub(win, doc, filters);
+  } catch (error) {
+    console.warn("[filter] " + tab + ":", error.message);
+  }
+}
+
+function applyToGeo(win, doc, filters) {
+  const catSel = doc.getElementById("category-select");
+  const yrSel = doc.getElementById("year-range");
+
+  if (catSel) {
+    const map = { all: "all", Physics: "physics", Chemistry: "chemistry", Medicine: "medicine" };
+    catSel.value = map[filters.disc] || "all";
+  }
+
+  if (yrSel) {
+    yrSel.value = filters.year;
+  }
+
+  if (typeof win.updateVisualizations === "function") {
+    win.updateVisualizations();
+  }
+}
+
+function applyToLaureates(win, doc, filters) {
+  ["Physics", "Chemistry", "Medicine"].forEach((field) => {
+    const pill = doc.querySelector('.field-pill[data-field="' + field + '"]');
+    if (!pill) return;
+
+    const isActive = pill.classList.contains("active");
+    const shouldActive = filters.disc === "all" || filters.disc === field;
+    if (isActive === shouldActive) return;
+
+    if (typeof win.toggleField === "function") {
+      win.toggleField(pill, field);
+    } else {
+      pill.click();
+    }
+  });
+}
+
+function applyToPub(win, doc, filters) {
+  const legendItems = doc.querySelectorAll("#fieldLegend .legend-item");
+
+  if (legendItems.length) {
+    const targetLabel = filters.disc === "all" ? "Total" : filters.disc;
+    legendItems.forEach((item) => {
+      const labelSpan = item.querySelector("span:last-child") || item;
+      if (labelSpan.textContent.trim() === targetLabel) {
+        item.click();
+      }
+    });
+  }
+
+  const chipAll = doc.getElementById("chip-all");
+  if (!chipAll) return;
+
+  if (filters.year === "all") {
+    chipAll.click();
+  } else if (filters.year === "1900-1950") {
+    const chip1900 = doc.getElementById("chip-1900");
+    if (chip1900) chip1900.click();
+  } else if (filters.year === "1950-2000") {
+    const chip1970 = doc.getElementById("chip-1970");
+    if (chip1970) chip1970.click();
+  } else if (filters.year === "2000-2016") {
+    const chip2000 = doc.getElementById("chip-2000");
+    if (chip2000) chip2000.click();
+  }
+}
+
+updateBadge(getFilters());
+</script>
+</body>
+</html>

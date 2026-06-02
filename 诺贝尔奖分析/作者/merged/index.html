@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nobel Laureates — Complete Visualization</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&display=swap">
+<link rel="stylesheet" href="../../国家/style/d3-design-system-cool.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════ -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-badge">Nobel Prize Data · 1900-2016</div>
+      <h1>得主探索</h1>
+      <p>浏览诺贝尔奖得主、论文数量、获奖年份和合作网络。</p>
+    </div>
+    <div class="header-stats" id="header-stats"></div>
+  </div>
+
+  
+</header>
+
+<nav class="mode-nav">
+    <button class="mode-btn active" data-mode="explorer" onclick="setMode('explorer')">
+      得主列表
+    </button>
+    <button class="mode-btn" data-mode="author-detail" id="btn-author-detail" style="display:none" onclick="setMode('author-detail')">
+      <span id="selected-author-label">得主详情</span>
+    </button>
+    <button class="mode-btn" data-mode="network" onclick="setMode('network')">
+      合作网络
+    </button>
+    <button class="mode-btn" data-mode="global" onclick="setMode('global')">
+      全局统计
+    </button>
+  </nav>
+
+<!-- ══════════════════════════════════════════════
+     MODE: AUTHOR EXPLORER
+══════════════════════════════════════════════ -->
+<div id="mode-explorer" class="mode-panel active">
+
+  <div class="controls-bar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search-input" placeholder="搜索得主…" oninput="handleSearch()">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+
+    <div class="field-legend">
+      <button class="field-pill active" data-field="Physics"   onclick="toggleField(this,'Physics')">
+        <span class="dot" style="background:var(--c-phys)"></span>Physics
+      </button>
+      <button class="field-pill active" data-field="Chemistry" onclick="toggleField(this,'Chemistry')">
+        <span class="dot" style="background:var(--c-chem)"></span>Chemistry
+      </button>
+      <button class="field-pill active" data-field="Medicine"  onclick="toggleField(this,'Medicine')">
+        <span class="dot" style="background:var(--c-med)"></span>Medicine
+      </button>
+    </div>
+
+    <div class="sort-group">
+      <span class="ctrl-label">排序</span>
+      <button class="sort-btn active" onclick="setSort(this,'prize_year')">年份</button>
+      <button class="sort-btn"        onclick="setSort(this,'papers')">论文</button>
+      <button class="sort-btn"        onclick="setSort(this,'wait')">等待</button>
+      <button class="sort-btn"        onclick="setSort(this,'name')">姓名</button>
+    </div>
+
+    <div class="results-meta" id="results-meta"></div>
+  </div>
+
+  <div class="author-grid" id="author-grid"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODE: AUTHOR DETAIL
+══════════════════════════════════════════════ -->
+<div id="mode-author-detail" class="mode-panel">
+  <div class="detail-top-bar">
+    <button class="back-btn" onclick="setMode('explorer')">← Back to Explorer</button>
+    <div class="detail-author-info" id="detail-author-info"></div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="badge badge-indigo">Lifecycle Analysis</div>
+      <h2>Research Timeline</h2>
+      <p>Scroll horizontally · Click a dot to see paper details</p>
+    </div>
+    <div class="section-card-body">
+      <div id="timeline-scroll" style="overflow-x:auto;overflow-y:hidden;"></div>
+      <div id="timeline-detail-wrap">
+        <div id="timeline-detail">
+          <span style="color:var(--text3);font-size:12px;">Click a dot to see paper details.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="badge badge-blue">Collaboration</div>
+      <h2>合作者网络</h2>
+      <p>Laureates who co-authored at least one paper with this author</p>
+    </div>
+    <div class="section-card-body">
+      <div id="network"></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="badge badge-emerald">Career Arc</div>
+      <h2>年度发文量</h2>
+      <p>Highlighted bar = prize paper year</p>
+    </div>
+    <div class="section-card-body">
+      <svg class="career-chart" id="career-chart"></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODE: NETWORK (Global Collaboration)
+══════════════════════════════════════════════ -->
+<div id="mode-network" class="mode-panel">
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="badge badge-purple">Collaboration</div>
+      <h2>全球合作网络</h2>
+      <p>节点大小 = 论文总数 &nbsp;·&nbsp; 连线 = 合著论文 &nbsp;·&nbsp; 拖拽可调整布局 · 点击节点查看得主详情</p>
+      <div class="net-filter-row">
+        <span class="ctrl-label">Field</span>
+        <button class="sort-btn active" id="net-f-phys"   onclick="setNetField(this,'Physics')">Physics</button>
+        <button class="sort-btn"        id="net-f-chem"   onclick="setNetField(this,'Chemistry')">Chemistry</button>
+        <button class="sort-btn"        id="net-f-med"    onclick="setNetField(this,'Medicine')">Medicine</button>
+        <span class="ctrl-label" style="margin-left:16px">Era</span>
+        <button class="sort-btn active" id="net-d-all"    onclick="setNetDecade(this,'all')">All</button>
+        <button class="sort-btn"        id="net-d-1900"   onclick="setNetDecade(this,'1900')">1900–30s</button>
+        <button class="sort-btn"        id="net-d-1940"   onclick="setNetDecade(this,'1940')">1940–60s</button>
+        <button class="sort-btn"        id="net-d-1970"   onclick="setNetDecade(this,'1970')">1970–90s</button>
+        <button class="sort-btn"        id="net-d-2000"   onclick="setNetDecade(this,'2000')">2000–10s</button>
+      </div>
+    </div>
+    <div class="section-card-body" style="padding:0;">
+      <div class="network-wrap" id="global-network-wrap">
+        <div class="net-tooltip" id="net-tooltip"></div>
+      </div>
+      <div class="net-info" id="net-info"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODE: GLOBAL STATS
+══════════════════════════════════════════════ -->
+<div id="mode-global" class="mode-panel">
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="badge badge-cyan">Global Analytics</div>
+      <h2>Global Statistics</h2>
+      <p>Cross-field publication &amp; prize analysis</p>
+    </div>
+    <div class="section-card-body">
+      <div id="global-stats"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Global Tooltip -->
+<div id="tooltip" class="global-tooltip"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

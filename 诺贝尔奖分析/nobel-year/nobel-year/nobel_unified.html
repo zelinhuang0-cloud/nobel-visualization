@@ -1,0 +1,2598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Nobel Prize · Publication &amp; Recognition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8FAFC;--surface:#fff;--surface2:#F1F5F9;--surface3:#E2E8F0;
+  --text:#1E293B;--text2:#475569;--text3:#94A3B8;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --c1:#2563EB;--c2:#0891B2;--c3:#7C3AED;
+  --c1a:rgba(37,99,235,0.10);--c2a:rgba(8,145,178,0.10);--c3a:rgba(124,58,237,0.10);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --mono:'DM Mono',monospace;
+  --body:'DM Sans',system-ui,sans-serif;
+  --display:'Fraunces',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:var(--body);font-size:14px;color:var(--text);background-color:var(--bg);min-height:100vh;background-image:radial-gradient(circle,rgba(148,163,184,0.28) 1px,transparent 1px);background-size:24px 24px;}
+.page{max-width:1100px;margin:0 auto;padding:36px 24px 64px}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;padding-bottom:28px;border-bottom:0.5px solid var(--border2)}
+.hero-left h1{font-family:var(--display);font-size:38px;font-weight:300;font-style:italic;letter-spacing:-0.02em;color:var(--text);line-height:1.1}
+.hero-left p{font-size:13px;color:var(--text2);margin-top:8px;letter-spacing:0.02em}
+.stats-row{display:flex;gap:8px;flex-wrap:wrap}
+.stat-pill{background:var(--surface);border:0.5px solid var(--border2);border-radius:8px;padding:8px 14px;font-size:11px;color:var(--text2);font-weight:500;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;}
+.stat-pill span{display:block;color:var(--text);font-family:var(--display);font-style:italic;font-size:22px;font-weight:300;margin-bottom:1px}
+.legend{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text2);cursor:pointer;user-select:none;padding:5px 10px;border-radius:20px;transition:background 0.18s,opacity 0.18s;border:0.5px solid transparent}
+.legend-item:hover{background:var(--surface2)}
+.legend-item.active{background:var(--surface2);border-color:var(--border2)}
+.legend-item.muted{opacity:0.3}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.card{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;margin-bottom:28px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.card-header{padding:20px 24px 16px;border-bottom:0.5px solid var(--border);background:var(--surface2)}
+.card-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:3px;font-family:var(--body)}
+.card-sub{font-size:12px;color:var(--text2)}
+.card-body{padding:22px 24px}
+#chart1-wrap{position:relative;width:100%;height:360px}
+#chart2-wrap{position:relative;width:100%;height:420px}
+#yr_chart1-wrap{position:relative;width:100%;height:360px}
+#yr_chart2-wrap{position:relative;width:100%;height:420px}
+svg{overflow:visible;font-family:var(--body)}
+.axis-label{font-size:12px;fill:var(--text3);font-family:var(--body)}
+.grid line{stroke:var(--border);stroke-width:0.5px}
+.grid .domain{display:none}
+.domain{stroke:var(--border);stroke-width:0.5px}
+.tick line{stroke:var(--border);stroke-width:0.5px}
+.tick text{fill:var(--text2);font-size:12px;font-family:var(--body)}
+#tooltip{position:fixed;pointer-events:none;background:var(--surface);border:0.5px solid var(--border2);border-radius:8px;padding:10px 14px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,0.10);opacity:0;transition:opacity 0.15s;z-index:999;max-width:230px;white-space:normal;line-height:1.55;}
+#tooltip .tt-label{font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:500}
+#tooltip .tt-val{font-family:var(--display);font-style:italic;font-size:22px;font-weight:300;color:var(--text)}
+#tooltip .tt-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.ctrl-group{display:flex;flex-direction:column;gap:4px}
+.ctrl-label{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);font-weight:500}
+.range-row{display:flex;align-items:center;gap:8px}
+.range-row input[type=range]{width:140px;accent-color:var(--c1)}
+.range-val{font-size:12px;font-family:var(--mono);color:var(--text);min-width:36px;text-align:right}
+.btn-group{display:flex;gap:4px}
+.btn{background:var(--surface2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 12px;font-size:12px;font-family:var(--body);color:var(--text);cursor:pointer;transition:all 0.15s}
+.btn:hover{background:var(--surface3)}
+.btn.active{background:var(--text);color:var(--surface);border-color:var(--text)}
+.brush-info{font-size:12px;color:var(--text2);margin-top:8px;min-height:16px;font-style:italic}
+.range-display{background:var(--surface2);border:0.5px solid var(--border2);border-radius:4px;padding:2px 8px;font-size:12px;color:var(--text);display:inline-block;font-family:var(--mono)}
+.dot{cursor:pointer}.violin-path{opacity:0.15}.box-median{stroke-width:2px}.avg-line{stroke-width:1px}
+.summary-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.sum-card{flex:1;min-width:120px;background:var(--surface2);border-radius:8px;padding:10px 14px;border:0.5px solid var(--border)}
+.sum-card.c-chem{background:rgba(37,99,235,0.06);border-color:rgba(37,99,235,0.2)}
+.sum-card.c-med{background:rgba(8,145,178,0.06);border-color:rgba(8,145,178,0.2)}
+.sum-card.c-phys{background:rgba(124,58,237,0.06);border-color:rgba(124,58,237,0.2)}
+.sum-label{font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:500;margin-bottom:4px}
+.sum-val{font-family:var(--display);font-style:italic;font-size:28px;font-weight:300;color:var(--text);line-height:1}
+.sum-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.anno-line{stroke-dasharray:3 3;stroke-width:1px}.anno-text{font-size:11px;font-family:var(--body);pointer-events:none}
+.tab-row{display:flex;gap:4px;margin-bottom:16px}
+.tab{padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--text2);transition:all 0.15s;font-family:var(--body)}
+.tab:hover{background:var(--surface2)}
+.tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+.period-chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:3px 10px;border-radius:12px;font-size:11px;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--text2);transition:all .12s;font-family:var(--body)}
+.chip:hover{background:var(--surface2)}
+.chip.active{background:var(--c1);color:#fff;border-color:var(--c1)}
+.selection{fill:rgba(37,99,235,0.07);stroke:rgba(37,99,235,0.35);stroke-width:0.5px}
+.handle{fill:#fff;stroke:var(--border2)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+/* layout extensions (fonts unchanged — use design-system tokens) */
+.page{max-width:1280px;padding:28px 36px 64px}
+.hero{margin-bottom:18px;padding:20px 22px;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:none}
+.hero-left p{margin-top:6px;font-size:14px;line-height:1.5}
+.stat-pill{border:1px solid var(--border);border-radius:6px;background:var(--surface2);padding:8px 12px;letter-spacing:0;text-transform:none}
+.card{border:1px solid var(--border);border-radius:8px;box-shadow:none;margin-bottom:16px}
+.card-header{padding:16px 18px 13px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.card-body{padding:20px}
+.controls,.summary-bar{border-radius:8px}
+.tab,.chip,.btn{border-radius:6px}
+/* shell */
+#global-hero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:end;
+  gap:24px;
+  max-width:1280px;
+  margin:24px auto 0;
+  padding:24px 28px 18px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px 8px 0 0;
+}
+#global-hero .eyebrow{font-family:var(--body);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:8px}
+#global-hero h1{font-family:var(--display);font-size:38px;font-weight:300;font-style:italic;letter-spacing:-0.02em;color:var(--text);line-height:1.1;margin-bottom:8px}
+#global-hero h1 strong{font-style:normal;font-weight:700}
+#global-hero .subtitle{max-width:620px;font-size:13px;line-height:1.6;color:var(--text2);letter-spacing:0;margin-bottom:0}
+.global-stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.global-stats .stat-pill{min-width:90px;border-radius:6px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);letter-spacing:0;text-transform:none}
+.global-stats .stat-pill span{font-family:var(--display);font-style:italic;font-size:22px;font-weight:300;color:var(--text)}
+#tab-nav{position:sticky;top:0;z-index:100;background:var(--surface2);border:1px solid var(--border);border-top:0;border-radius:0 0 8px 8px;padding:0 20px;max-width:1280px;margin:0 auto 24px;display:flex;gap:4px;overflow-x:auto;backdrop-filter:blur(8px)}
+.tab-btn{height:40px;padding:0 14px;font-size:13px;font-family:var(--body);color:var(--text2);background:none;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;transition:background .18s,color .18s}
+.tab-btn:hover{color:var(--text);background:rgba(255,255,255,.68)}
+.tab-btn.active{color:var(--text);background:var(--surface);font-weight:600}
+.tab-btn .en{display:block;font-size:10px;font-family:var(--mono);letter-spacing:.06em;opacity:.45;margin-top:2px;text-transform:uppercase}
+.module{display:none;max-width:1100px;margin:0 auto;padding:0 24px 60px}
+.module.active{display:block}
+.module .hero,.module header{display:none!important}
+#loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
+#loading-overlay .lt{font-family:var(--display);font-style:italic;font-weight:300;font-size:24px;color:var(--text2);margin-bottom:16px}
+#loading-overlay .bar-wrap{width:240px;height:1.5px;background:var(--border2);border-radius:2px;overflow:hidden}
+#loading-overlay .bar{height:100%;width:0%;background:var(--text);border-radius:2px;transition:width .3s ease}
+#loading-overlay .sub{margin-top:12px;font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:.05em}
+/* extra */
+.lbl{font-size:11px;fill:var(--text3)}.annot{font-size:11px;fill:var(--text2)}.grid-line{stroke:var(--border);stroke-width:0.5}
+.note{font-size:11px;color:var(--text3);margin-top:8px;font-style:italic}
+.chips-label{font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.filter-info{font-size:12px;color:var(--text2);font-style:italic}
+.decade-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.decade-chips .chip{padding:3px 10px;border-radius:12px;font-size:11px;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--text2);transition:all .12s;font-family:var(--body)}
+.decade-chips .chip:hover{background:var(--surface2)}
+.decade-chips .chip.active{background:var(--c1);color:#fff;border-color:var(--c1)}
+footer{margin-top:32px;padding-top:20px;border-top:.5px solid var(--border)}
+footer h3{font-size:14px;font-weight:500;margin-bottom:8px;color:var(--text2)}
+footer p{font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:8px}
+footer code{background:var(--surface2);padding:1px 5px;border-radius:3px;font-family:var(--mono)}
+
+
+/* ============================================================
+   D3 Data Viz Design System — Cool Tone Edition
+   Version: 1.0  |  Base: Fraunces + DM Sans + DM Mono
+   ============================================================
+
+   USAGE:
+     
+   
+   Then in D3 JS, read tokens via:
+     getComputedStyle(document.documentElement).getPropertyValue('--c1')
+   
+   DISCIPLINE COLOUR CLASSES  (add to .sum-card)
+     .c-chem   Chemistry → azure  #2563EB
+     .c-med    Medicine  → cyan   #0891B2
+     .c-phys   Physics   → violet #7C3AED
+   
+   FONTS (loaded via Google Fonts — include link tag separately):
+     @import "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&display=swap"
+   ============================================================ */
+
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* subtle dot-grid on bg — same cool tone as --surface2 */
+body{font-family:var(--body);font-size:14px;color:var(--text);background-color:var(--bg);min-height:100vh;background-image:radial-gradient(circle,rgba(148,163,184,0.28) 1px,transparent 1px);background-size:24px 24px;}
+
+/* layout */
+.page{max-width:1100px;margin:0 auto;padding:36px 24px 64px}
+
+/* hero */
+.hero{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;padding-bottom:28px;border-bottom:0.5px solid var(--border2)}
+.hero-left h1{font-family:var(--display);font-size:38px;font-weight:300;font-style:italic;letter-spacing:-0.02em;color:var(--text);line-height:1.1}
+.hero-left p{font-size:13px;color:var(--text2);margin-top:8px;letter-spacing:0.02em}
+.stats-row{display:flex;gap:8px;flex-wrap:wrap}
+.stat-pill{
+  background:var(--surface);border:0.5px solid var(--border2);
+  border-radius:8px;padding:8px 14px;font-size:11px;
+  color:var(--text2);font-weight:500;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;
+}
+.stat-pill span{display:block;color:var(--text);font-family:var(--display);font-style:italic;font-size:22px;font-weight:300;margin-bottom:1px}
+
+/* legend */
+.legend{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text2);cursor:pointer;user-select:none;padding:5px 10px;border-radius:20px;transition:background 0.18s,opacity 0.18s;border:0.5px solid transparent}
+.legend-item:hover{background:var(--surface2)}
+.legend-item.active{background:var(--surface2);border-color:var(--border2)}
+.legend-item.muted{opacity:0.3}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* cards — light tinted header band */
+.card{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;margin-bottom:28px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.card-header{padding:20px 24px 16px;border-bottom:0.5px solid var(--border);background:var(--surface2)}
+.card-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:3px;font-family:var(--body)}
+.card-sub{font-size:12px;color:var(--text2)}
+.card-body{padding:22px 24px}
+
+/* chart containers */
+#chart1-wrap{position:relative;width:100%;height:360px}
+#chart2-wrap{position:relative;width:100%;height:420px}
+svg{overflow:visible;font-family:var(--body)}
+.axis-label{font-size:12px;fill:var(--text3);font-family:var(--body)}
+.grid line{stroke:var(--border);stroke-width:0.5px}
+.grid .domain{display:none}
+.domain{stroke:var(--border);stroke-width:0.5px}
+.tick line{stroke:var(--border);stroke-width:0.5px}
+.tick text{fill:var(--text2);font-size:12px;font-family:var(--body)}
+
+/* tooltip */
+#tooltip{
+  position:fixed;pointer-events:none;
+  background:var(--surface);border:0.5px solid var(--border2);
+  border-radius:8px;padding:10px 14px;font-size:13px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.10);
+  opacity:0;transition:opacity 0.15s;z-index:999;max-width:230px;
+  white-space:normal;line-height:1.55;
+}
+#tooltip .tt-label{font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:500}
+#tooltip .tt-val{font-family:var(--display);font-style:italic;font-size:22px;font-weight:300;color:var(--text)}
+#tooltip .tt-sub{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* controls */
+.controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.ctrl-group{display:flex;flex-direction:column;gap:4px}
+.ctrl-label{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);font-weight:500}
+.range-row{display:flex;align-items:center;gap:8px}
+.range-row input[type=range]{width:140px;accent-color:var(--c1)}
+.range-val{font-size:12px;font-family:var(--mono);color:var(--text);min-width:36px;text-align:right}
+.btn-group{display:flex;gap:4px}
+.btn{background:var(--surface2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 12px;font-size:12px;font-family:var(--body);color:var(--text);cursor:pointer;transition:all 0.15s}
+.btn:hover{background:var(--surface3)}
+.btn.active{background:var(--text);color:var(--surface);border-color:var(--text)}
+
+/* brush info */
+.brush-info{font-size:12px;color:var(--text2);margin-top:8px;min-height:16px;font-style:italic}
+.range-display{background:var(--surface2);border:0.5px solid var(--border2);border-radius:4px;padding:2px 8px;font-size:12px;color:var(--text);display:inline-block;font-family:var(--mono)}
+
+/* chart-type specifics */
+.dot{cursor:pointer}
+.violin-path{opacity:0.15}
+.box-median{stroke-width:2px}
+.avg-line{stroke-width:1px}
+
+/* summary bar — tinted cards per discipline */
+.summary-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.sum-card{flex:1;min-width:120px;background:var(--surface2);border-radius:8px;padding:10px 14px;border:0.5px solid var(--border)}
+.sum-card.c-chem{background:rgba(37,99,235,0.06);border-color:rgba(37,99,235,0.2)}
+.sum-card.c-med {background:rgba(8,145,178,0.06);border-color:rgba(8,145,178,0.2)}
+.sum-card.c-phys{background:rgba(124,58,237,0.06);border-color:rgba(124,58,237,0.2)}
+.sum-label{font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:500;margin-bottom:4px}
+.sum-val{font-family:var(--display);font-style:italic;font-size:28px;font-weight:300;color:var(--text);line-height:1}
+.sum-sub{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* annotations */
+.anno-line{stroke-dasharray:3 3;stroke-width:1px}
+.anno-text{font-size:11px;font-family:var(--body);pointer-events:none}
+
+/* gap chart tabs */
+.tab-row{display:flex;gap:4px;margin-bottom:16px}
+.tab{padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--text2);transition:all 0.15s;font-family:var(--body)}
+.tab:hover{background:var(--surface2)}
+.tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* period chips */
+.period-chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:3px 10px;border-radius:12px;font-size:11px;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--text2);transition:all 0.12s;font-family:var(--body)}
+.chip:hover{background:var(--surface2)}
+.chip.active{background:var(--c1);color:#fff;border-color:var(--c1)}
+
+/* D3 brush */
+.selection{fill:rgba(37,99,235,0.07);stroke:rgba(37,99,235,0.35);stroke-width:0.5px}
+.handle{fill:#fff;stroke:var(--border2)}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ─────────── Lifecycle Halo additions ─────────── */
+#lifecycle-wrap{position:relative;width:100%;height:620px;outline:none}
+#mini-ruler-wrap{position:relative;width:100%;height:76px;margin-top:6px}
+.lifecycle-shell{position:relative}
+.metric-note{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.halo-bg{fill:none;stroke:var(--surface3);stroke-width:13;stroke-linecap:round;opacity:.55}
+.halo-segment{cursor:pointer;transition:opacity .16s,filter .16s;stroke:rgba(255,255,255,.42);stroke-width:.45px}
+
+.halo-segment.total-ring{stroke:rgba(15,23,42,.18);stroke-width:.7px}
+.peak-pin{pointer-events:none}
+.peak-pin circle{fill:var(--surface);stroke:var(--text);stroke-width:1px}
+.peak-pin text{font-size:10px;fill:var(--text2);font-family:var(--mono);text-anchor:middle}
+.halo-segment:hover{filter:drop-shadow(0 4px 8px rgba(15,23,42,.14))}
+.halo-segment.dimmed{opacity:.12}
+.halo-segment.out-range{opacity:.16}
+.halo-segment.active-year{stroke:var(--text);stroke-width:1.6px;filter:drop-shadow(0 5px 9px rgba(15,23,42,.16))}
+.halo-label{font-size:11px;fill:var(--text2);font-family:var(--body);font-weight:500;letter-spacing:.02em}
+.halo-label-sub{font-size:10px;fill:var(--text3);font-family:var(--mono)}
+.center-title{font-family:var(--display);font-style:italic;font-weight:300;fill:var(--text);font-size:40px;text-anchor:middle}
+.center-sub{font-size:12px;fill:var(--text2);text-anchor:middle;letter-spacing:.03em}
+.center-micro{font-size:10px;fill:var(--text3);text-anchor:middle;font-family:var(--mono);display:none}
+.prize-axis{stroke:var(--text);stroke-width:1;stroke-dasharray:4 4;opacity:.65}
+.prize-dot{fill:var(--surface);stroke:var(--text);stroke-width:1.2}
+.phase-arc{fill:none;stroke:var(--border2);stroke-width:1.1;stroke-linecap:round;opacity:.65}
+.phase-arc.active{stroke:var(--text);stroke-width:2;opacity:1}
+.phase-label{display:none}
+.ruler-bg{fill:var(--surface2);stroke:var(--border);stroke-width:.5px;rx:7}
+.ruler-cell{cursor:pointer;transition:opacity .15s}
+.ruler-cell.dimmed{opacity:.22}
+.ruler-cell.active{stroke:var(--text);stroke-width:1.2px}
+.ruler-axis text{font-size:11px;fill:var(--text2);font-family:var(--mono)}
+.ruler-axis path,.ruler-axis line{stroke:var(--border2);stroke-width:.5}
+.key-help{font-size:12px;color:var(--text2);margin-top:8px;font-style:italic}
+.lifecycle-legend{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.legend-line{width:16px;height:3px;border-radius:3px;display:inline-block}
+.phase-chip-row{display:flex;gap:6px;flex-wrap:wrap}
+.phase-chip{padding:4px 11px;border-radius:13px;font-size:11px;cursor:pointer;border:.5px solid var(--border2);background:transparent;color:var(--text2);transition:all .12s;font-family:var(--body)}
+.phase-chip:hover{background:var(--surface2)}
+.phase-chip.active{background:var(--text);color:#fff;border-color:var(--text)}
+@media (max-width:760px){
+  #global-hero{grid-template-columns:1fr;margin:16px 16px 0;padding:20px}
+  .global-stats{justify-content:flex-start}
+  #tab-nav{margin:0 16px 20px;padding:0 12px}
+  #lifecycle-wrap{height:560px}
+  .hero{align-items:flex-start;gap:20px;flex-direction:column}
+  .lifecycle-legend{justify-content:flex-start}
+}
+
+
+</style>
+</head>
+<body>
+
+<div id="loading-overlay">
+  <div class="lt">Nobel Prize</div>
+  <div class="bar-wrap"><div class="bar" id="load-bar"></div></div>
+  <div class="sub" id="load-sub">LOADING DATA…</div>
+</div>
+
+<div id="global-hero">
+  <div>
+    <div class="eyebrow">Nobel Prize Data · 1900-2016</div>
+    <h1>发文周期</h1>
+    <p class="subtitle">分析诺贝尔奖得主论文发表节奏、获奖等待时间和研究生命周期。</p>
+  </div>
+  <div class="global-stats">
+    <div class="stat-pill"><span>545</span>位得主</div>
+    <div class="stat-pill"><span>93.4k</span>篇论文</div>
+    <div class="stat-pill"><span>17 yr</span>平均等待</div>
+    <div class="stat-pill"><span id="g-links">—</span>获奖论文关联</div>
+  </div>
+</div>
+
+<nav id="tab-nav">
+  <button class="tab-btn active" data-tab="cyc">发文周期</button>
+  <button class="tab-btn" data-tab="gap">文章发表到获奖间隔</button>
+  <button class="tab-btn" data-tab="vol">每年发文量总数</button>
+  <button class="tab-btn" data-tab="paper">发表的第一篇论文到获奖年数</button>
+</nav>
+
+<!-- 模块一：发文周期 — Halo + 发文周期折线图 -->
+<div class="module active" id="mod-cyc">
+  <div class="page">
+    <div class="card">
+      <div class="card-header">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="card-title">发文生命周期 Halo</div>
+            <div class="card-sub">0 = 获奖年；外圈为全体；弧段越向外，发文强度越高</div>
+          </div>
+          <div class="lifecycle-legend" id="fieldLegend"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">指标</div>
+            <div class="btn-group" id="metricGroup">
+              <button class="btn active" data-metric="meanCount">人均发文强度</button>
+              <button class="btn" data-metric="activeShare">活跃作者占比</button>
+            </div>
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">延展强度</div>
+            <div class="range-row">
+              <input type="range" min="1" max="2.4" step="0.1" value="1.6" id="stretchRange">
+              <span class="range-val" id="stretchVal">1.6×</span>
+            </div>
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">生命周期阶段</div>
+            <div class="phase-chip-row" id="phaseChips"></div>
+          </div>
+        </div>
+        <div class="summary-bar" id="lifeSumBar">
+          <div class="sum-card"><div class="sum-label">当前窗口</div><div class="sum-val" id="sumWindow">全部</div><div class="sum-sub">相对获奖年份</div></div>
+          <div class="sum-card"><div class="sum-label">窗口论文量</div><div class="sum-val" id="sumPapers">–</div><div class="sum-sub">篇论文</div></div>
+          <div class="sum-card"><div class="sum-label">峰值位置</div><div class="sum-val" id="sumPeak">–</div><div class="sum-sub">相对获奖年</div></div>
+          <div class="sum-card"><div class="sum-label">获奖年活跃度</div><div class="sum-val" id="sumActive">–</div><div class="sum-sub">作者有发文</div></div>
+        </div>
+        <div class="metric-note">悬停弧段查看数值；拖到底部条或使用方向键切换年份。</div>
+        <div class="lifecycle-shell">
+          <div id="lifecycle-wrap" tabindex="0" aria-label="发文生命周期 Halo"></div>
+          <div id="mini-ruler-wrap"></div>
+        </div>
+        <div class="key-help" id="keyHelp">←/→ 年份 · ↑/↓ 聚焦 · 空格切换指标 · Esc 重置</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">发文周期折线图</div>
+        <div class="card-sub">以获奖年为基准（第 0 年），每位得主年均发文量的变化轨迹</div>
+      </div>
+      <div class="card-body">
+        <div class="top-row">
+          <div class="legend" id="yr_legend1"></div>
+          <div class="filter-info" id="yr_filter-info">显示：全部年代</div>
+        </div>
+        <div class="chips-label">按获奖年代筛选</div>
+        <div class="decade-chips" id="yr_decade-chips"></div>
+        <div class="chart-wrap" id="yr_chart1-wrap"></div>
+        <p class="note" id="yr-band-note">* 选择「全部」时，折线下方浅色带为均值 ±0.4σ（得主间个体差异），非累计发文量；2010 年代数据截至 2016 年</p>
+      </div>
+    </div>
+  </div><!-- /page -->
+</div><!-- /mod-cyc -->
+
+<!-- 模块二：文章发表到获奖间隔 -->
+<div class="module" id="mod-gap">
+  <div class="page">
+<div class="card">
+  <div class="card-header">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+      <div>
+        <div class="card-title">文章发表到获奖间隔</div>
+        <div class="card-sub">每个点代表一篇获奖论文 · 可拖拽 Brush 筛选获奖年份 · 散点图可在全部与单学科之间切换</div>
+      </div>
+      <div class="legend" id="legend2"></div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="controls" style="margin-bottom:8px">
+      <div class="ctrl-group">
+        <div class="ctrl-label">图表类型</div>
+        <div class="tab-row" id="chartTypeTabs" style="margin-bottom:0">
+          <button type="button" class="tab active" data-view="scatter" onclick="setGapView('scatter')">散点图</button>
+          <button type="button" class="tab" data-view="box" onclick="setGapView('box')">箱型图</button>
+          <button type="button" class="tab" data-view="violin" onclick="setGapView('violin')">分布图</button>
+          <button type="button" class="tab" data-view="trend" onclick="setGapView('trend')">趋势图</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">最大间隔 (年)</div>
+        <div class="range-row">
+          <input type="range" min="5" max="60" value="60" id="maxGap" oninput="setMaxGap(this.value)">
+          <span class="range-val" id="maxGapVal">60</span>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">获奖年份</div>
+        <div class="range-row">
+          <input type="range" min="1900" max="2016" value="1900" id="yearFrom" oninput="setYearFrom(this.value)">
+          <span class="range-val" id="yearFromVal">1900</span>
+          <span style="color:var(--text3);font-size:11px">–</span>
+          <input type="range" min="1900" max="2016" value="2016" id="yearTo" oninput="setYearTo(this.value)">
+          <span class="range-val" id="yearToVal">2016</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-bar" id="gapSumBar">
+      <div class="sum-card c-phys"><div class="sum-label">Physics 平均间隔</div><div class="sum-val" id="gAvgP">–</div><div class="sum-sub">年</div></div>
+      <div class="sum-card c-chem"><div class="sum-label">Chemistry 平均间隔</div><div class="sum-val" id="gAvgC">–</div><div class="sum-sub">年</div></div>
+      <div class="sum-card c-med"><div class="sum-label">Medicine 平均间隔</div><div class="sum-val" id="gAvgM">–</div><div class="sum-sub">年</div></div>
+      <div class="sum-card"><div class="sum-label">最长间隔</div><div class="sum-val" id="gMax">–</div><div class="sum-sub">年</div></div>
+    </div>
+
+    <div id="chart2-wrap"></div>
+  </div>
+</div>
+
+
+</div><!-- /page -->
+</div><!-- /mod-gap -->
+
+<!-- 模块三：每年发文量总数 -->
+<div class="module" id="mod-vol">
+  <div class="page">
+    <div class="card">
+      <div class="card-header">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="card-title">每年发文量总数</div>
+            <div class="card-sub">Physics · Chemistry · Medicine 年度发文量（1900–2018）· 拖拽 Brush 选取时段</div>
+          </div>
+          <div class="legend" id="legend1"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">显示模式</div>
+            <div class="btn-group" id="modeGroup">
+              <button class="btn active" data-mode="line" onclick="setMode('line')">折线</button>
+              <button class="btn" data-mode="area" onclick="setMode('area')">面积</button>
+              <button class="btn" data-mode="bar" onclick="setMode('bar')">长条</button>
+            </div>
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">快速时段</div>
+            <div class="period-chips" id="periodChips">
+              <button class="chip" onclick="setRange(1900,2018)">全部</button>
+              <button class="chip" onclick="setRange(1900,1945)">战前 (–1945)</button>
+              <button class="chip" onclick="setRange(1945,1980)">战后黄金 (1945–80)</button>
+              <button class="chip" onclick="setRange(1980,2000)">80–00s</button>
+              <button class="chip" onclick="setRange(2000,2018)">近代 (2000–)</button>
+            </div>
+          </div>
+        </div>
+        <div class="summary-bar" id="sumBar">
+          <div class="sum-card"><div class="sum-label">区间</div><div class="sum-val" id="sumRange">1900–2018</div><div class="sum-sub">选取年份范围</div></div>
+          <div class="sum-card c-chem"><div class="sum-label">Chemistry</div><div class="sum-val" id="sumChem">–</div><div class="sum-sub">篇论文</div></div>
+          <div class="sum-card c-med"><div class="sum-label">Medicine</div><div class="sum-val" id="sumMed">–</div><div class="sum-sub">篇论文</div></div>
+          <div class="sum-card c-phys"><div class="sum-label">Physics</div><div class="sum-val" id="sumPhys">–</div><div class="sum-sub">篇论文</div></div>
+          <div class="sum-card"><div class="sum-label">合计</div><div class="sum-val" id="sumTotal">–</div><div class="sum-sub">篇论文</div></div>
+        </div>
+        <div id="chart1-wrap"></div>
+        <div class="brush-info" id="brushInfo">← 在图表上拖拽选取年份范围，可查看区间统计</div>
+      </div>
+    </div>
+  </div><!-- /page -->
+</div><!-- /mod-vol -->
+
+<!-- 模块四：发表的第一篇论文到获奖年数 -->
+<div class="module" id="mod-paper">
+  <div class="page">
+  <div id="error" style="display:none"></div>
+
+  <section class="card" id="q4">
+    <div class="card-header">
+      <div class="card-title">从第一篇论文到获奖</div>
+      <div class="card-sub">得主最早论文至获奖的年数分布（箱宽 5 年）；虚线 = 本学科中位数，实线 = 全体中位数，阴影 = 四分位距</div>
+    </div>
+    <div class="card-body">
+      <div id="q4tabs" class="tab-row"></div>
+      <div class="plot"></div>
+    </div>
+  </section>
+
+  <section class="card" id="q5">
+    <div class="card-header">
+      <div class="card-title">按年代看：第一篇论文到获奖间隔</div>
+      <div class="card-sub">按获奖年代与学科的中位数间隔（仅显示该年代得主数 ≥3 的时段）</div>
+    </div>
+    <div class="card-body">
+      <div id="q5toggle" class="legend"></div>
+      <p class="note" style="margin:0 0 8px">点击圆角标签可过滤下图中的学科折线</p>
+      <div id="legend" class="legend"></div>
+      <div class="plot"></div>
+    </div>
+  </section>
+
+  </div><!-- /page -->
+</div><!-- /mod-paper -->
+
+<div id="tooltip"><div class="tt-label" id="ttLabel"></div><div class="tt-val" id="ttVal"></div><div class="tt-sub" id="ttSub"></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+
+<script>
+/* Tab 切换 — 先 show 再 draw，避免 clientWidth=0 */
+var _drawn = { cyc: 0 };
+function isModuleVisible(tab) {
+  var el = document.getElementById('mod-' + tab);
+  return el && el.classList.contains('active');
+}
+function chartDims(el, fw, fh) {
+  if (!el) return { W: fw, H: fh, ok: false };
+  var W = el.clientWidth, H = el.clientHeight;
+  if (W < 4 || H < 4) return { W: fw, H: fh, ok: false };
+  return { W: W, H: H, ok: true };
+}
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.module').forEach(function(m){m.classList.remove('active');});
+  document.querySelector('[data-tab="'+tab+'"]').classList.add('active');
+  document.getElementById('mod-'+tab).classList.add('active');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      if (tab==='cyc' && _drawn.cyc >= 2) {
+        window._redraw_lc && window._redraw_lc();
+        window._redraw_yr && window._redraw_yr();
+      } else if (tab==='gap' && _drawn.gap) {
+        window._redraw_gap && window._redraw_gap();
+      } else if (tab==='vol' && _drawn.vol) {
+        window._redraw_vol && window._redraw_vol();
+      } else if (tab==='paper' && _drawn.paper) {
+        window._redraw_idx && window._redraw_idx();
+      }
+    });
+  });
+}
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){ switchTab(btn.dataset.tab); });
+});
+window.addEventListener('resize', function(){
+  var t = document.querySelector('.tab-btn.active');
+  if (t) switchTab(t.dataset.tab);
+});
+function setLoad(pct, msg) {
+  document.getElementById('load-bar').style.width = pct+'%';
+  if (msg) document.getElementById('load-sub').textContent = msg;
+}
+</script>
+
+<!-- 模块：发文量 -->
+<script>
+(function() {
+const COLORS = {Chemistry:'#2563EB', Medicine:'#0891B2', Physics:'#7C3AED'};
+const COLORS_A = {Chemistry:'rgba(37,99,235,0.10)', Medicine:'rgba(8,145,178,0.10)', Physics:'rgba(124,58,237,0.10)'};
+const DISCIPLINES = ['Chemistry','Medicine','Physics'];
+const MIN_PUB_YEAR = 1900, MAX_PUB_YEAR = 2018;
+const MIN_PRIZE_YEAR = 1900, MAX_PRIZE_YEAR = 2016;
+const T = {fast:220, med:520, slow:780};
+
+/* ─── STATE ─── */
+let chartMode = 'line';
+let brushRange = [MIN_PUB_YEAR, MAX_PUB_YEAR];
+let gapView = 'scatter';
+let maxGap = 60;
+let yearFrom = MIN_PRIZE_YEAR, yearTo = MAX_PRIZE_YEAR;
+let gapSort = 'default';
+let activeChart = 'chart1';
+let activeDisc1 = new Set(DISCIPLINES);
+let activeDisc2 = new Set(DISCIPLINES);
+let chart1BrushApi = null;
+let chart2BrushApi = null;
+const numericMemory = new Map();
+
+/* ─── SMALL HELPERS ─── */
+const $ = id => document.getElementById(id);
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const fmtInt = v => Math.round(v).toLocaleString();
+const fmtDec = v => (+v).toFixed(1);
+function slug(s){ return String(s).replace(/[^a-z0-9]/gi,'-'); }
+function colorFor(d){ return COLORS[d] || '#64748B'; }
+function colorAFor(d){ return COLORS_A[d] || 'rgba(100,116,139,0.10)'; }
+function stableHash(str){
+  let h=2166136261;
+  for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); }
+  return (h>>>0)/4294967295;
+}
+function jitterFromKey(key, amp){ return (stableHash(key)-0.5)*amp; }
+function strokeReveal(sel, duration=T.slow){
+  sel.each(function(){
+    let len = 0;
+    try { len = this.getTotalLength(); } catch(e) { len = 0; }
+    if(!len) return;
+    d3.select(this)
+      .attr('stroke-dasharray',`${len} ${len}`)
+      .attr('stroke-dashoffset',len)
+      .transition().duration(duration).ease(d3.easeCubicOut)
+      .attr('stroke-dashoffset',0);
+  });
+}
+function animateNumber(id, value, decimals=0){
+  const el = $(id);
+  if(!el) return;
+  if(value==null || Number.isNaN(value)){
+    numericMemory.delete(id);
+    el.textContent = '–';
+    return;
+  }
+  const prev = numericMemory.has(id) ? numericMemory.get(id) : 0;
+  numericMemory.set(id, value);
+  d3.select(el).interrupt().transition()
+    .duration(T.med).ease(d3.easeCubicOut)
+    .tween('text', function(){
+      const interp = d3.interpolateNumber(prev, value);
+      return t => { el.textContent = decimals ? fmtDec(interp(t)) : fmtInt(interp(t)); };
+    });
+}
+function setText(id, value){ const el=$(id); if(el) el.textContent=value; }
+function makeFocusable(el, name, title){
+  el.setAttribute('tabindex','0');
+  el.setAttribute('role','img');
+  el.setAttribute('aria-label',title);
+  el.title = title;
+  el.addEventListener('mouseenter',()=>{ activeChart=name; });
+  el.addEventListener('focus',()=>{ activeChart=name; });
+}
+function noData(g,iW,iH,message='当前筛选条件下没有数据'){
+  g.append('text')
+    .attr('x',iW/2).attr('y',iH/2).attr('text-anchor','middle')
+    .attr('fill','var(--text3)').attr('font-size',13)
+    .text(message);
+}
+
+/* ─── TOOLTIP ─── */
+const tt = $('tooltip');
+function showTT(x, y, label, val, sub){
+  $('ttLabel').innerHTML = label;
+  $('ttVal').innerHTML = val;
+  $('ttSub').innerHTML = sub||'';
+  tt.style.left = (x+14)+'px';
+  tt.style.top = (y-10)+'px';
+  tt.classList.add('visible'); tt.style.opacity=1;
+}
+function hideTT(){tt.style.opacity=0;}
+document.addEventListener('mousemove', e=>{
+  if(tt.style.opacity==='1'){
+    tt.style.left=(e.clientX+14)+'px';
+    tt.style.top=(e.clientY-10)+'px';
+  }
+});
+
+/* ─── LEGENDS ─── */
+function buildLegend(id, activeSet, onChange){
+  const el = $(id);
+  if(!el) return;
+  el.innerHTML = '';
+  const refresh = ()=>{
+    el.querySelectorAll('.legend-item[data-disc]').forEach(item=>{
+      const d = item.dataset.disc;
+      item.className = 'legend-item' + (activeSet.has(d) ? '' : ' muted');
+    });
+  };
+  DISCIPLINES.forEach(d=>{
+    const item = document.createElement('div');
+    item.dataset.disc = d;
+    item.className = 'legend-item'+(activeSet.has(d)?'':' muted');
+    item.innerHTML = `<div class="legend-dot" style="background:${COLORS[d]}"></div><span>${d}</span>`;
+    item.onclick = ()=>{
+      if(activeSet.has(d)&&activeSet.size===1) return;
+      if(activeSet.has(d)) activeSet.delete(d); else activeSet.add(d);
+      refresh();
+      onChange();
+    };
+    el.appendChild(item);
+  });
+  const totalItem = document.createElement('div');
+  totalItem.className = 'legend-item active';
+  totalItem.style.cursor = 'default';
+  totalItem.title = 'Total：三学科年度总发表量；仅在折线图和面积图中显示为黑色虚线';
+  totalItem.innerHTML = `<div style="width:18px;border-top:1.6px dashed var(--text);height:0"></div><span>Total（虚线）</span>`;
+  el.appendChild(totalItem);
+}
+
+
+/* ═══════════════════════════════════════════════
+   CHART 1: Publication Timeline + BrushX
+═══════════════════════════════════════════════ */
+// pubByDisc 和 allYears 由下方 d3.csv 回调填入
+const pubByDisc = {};
+const allYears = [];
+
+function updatePeriodChips(){
+  const ranges = [[1900,2018],[1900,1945],[1945,1980],[1980,2000],[2000,2018]];
+  document.querySelectorAll('#periodChips .chip').forEach((c,i)=>{
+    const r = ranges[i];
+    c.classList.toggle('active', !!r && brushRange[0]===r[0] && brushRange[1]===r[1]);
+  });
+}
+function applyPubRange(y0,y1, source='brush', live=false){
+  y0 = clamp(Math.round(y0), MIN_PUB_YEAR, MAX_PUB_YEAR);
+  y1 = clamp(Math.round(y1), MIN_PUB_YEAR, MAX_PUB_YEAR);
+  if(y0>y1) [y0,y1] = [y1,y0];
+  brushRange = [y0,y1];
+  updateSummary(y0,y1);
+  updatePeriodChips();
+  const label = source==='quick' ? '快速选取' : live ? '拖拽中' : '已选取';
+  $('brushInfo').innerHTML = `${label} <span class="range-display">${y0} – ${y1}</span>（${y1-y0+1} 年） · 键盘：←/→ 平移、↑/↓ 扩缩、1/2/3 切换图形、Esc 重置`;
+}
+function movePubBrushToRange(y0,y1){
+  applyPubRange(y0,y1,'keyboard');
+  if(chart1BrushApi){
+    chart1BrushApi.group.transition().duration(T.fast).ease(d3.easeCubicOut)
+      .call(chart1BrushApi.brush.move, [chart1BrushApi.xScale(y0), chart1BrushApi.xScale(y1)]);
+  } else {
+    drawChart1();
+  }
+}
+function drawChart1(){
+  const wrap = $('chart1-wrap');
+  wrap.innerHTML='';
+  if (!isModuleVisible('vol')) return;
+  makeFocusable(wrap,'chart1','年度发文量图：拖拽图面选取年份；键盘可用 ←/→ 平移、↑/↓ 扩缩、1/2/3 切换折线/面积/长条。');
+  const dim = chartDims(wrap, 900, 360);
+  if (!dim.ok) return;
+  const W = dim.W, H = dim.H;
+  const m = {t:20,r:20,b:44,l:52};
+  const iW = W-m.l-m.r, iH = H-m.t-m.b;
+  if (iW < 4 || iH < 4) return;
+
+  const svg = d3.select('#chart1-wrap').append('svg')
+    .attr('width',W).attr('height',H).attr('class','d3-chart');
+  const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+
+  const years = allYears;
+  const xScale = d3.scaleLinear().domain([MIN_PUB_YEAR,MAX_PUB_YEAR]).range([0,iW]);
+  const visibleDisc = DISCIPLINES.filter(d=>activeDisc1.has(d));
+  const totalLineData = years.map(y=>({
+    y,
+    v: DISCIPLINES.reduce((sum,d)=>sum+(pubByDisc[d][y]||0),0)
+  }));
+  const discMax = d3.max(visibleDisc.flatMap(d=>years.map(y=>pubByDisc[d][y]||0))) || 1;
+  const totalMax = d3.max(totalLineData,d=>d.v) || 1;
+  const maxCount = (chartMode==='line'||chartMode==='area') ? Math.max(discMax,totalMax) : discMax;
+  const yScale = d3.scaleLinear().domain([0, maxCount*1.08]).range([iH,0]).nice();
+
+  g.append('g').attr('class','grid').call(
+    d3.axisLeft(yScale).ticks(5).tickSize(-iW).tickFormat('')
+  );
+  g.append('g').attr('transform',`translate(0,${iH})`).call(
+    d3.axisBottom(xScale).ticks(10).tickFormat(d3.format('d'))
+  );
+  g.append('g').call(d3.axisLeft(yScale).ticks(5).tickFormat(d=> d>=1000 ? (d/1000).toFixed(1)+'k' : d));
+  g.append('text').attr('class','axis-label').attr('x',iW/2).attr('y',iH+36).attr('text-anchor','middle').text('年份');
+  g.append('text').attr('class','axis-label').attr('transform','rotate(-90)').attr('x',-iH/2).attr('y',-40).attr('text-anchor','middle').text('发文量');
+
+  // faint selected-window backdrop; real BrushX selection sits on top and is draggable.
+  const selectedBackdrop = g.append('rect')
+    .attr('x',xScale(brushRange[0])).attr('y',0)
+    .attr('width',Math.max(1, xScale(brushRange[1]) - xScale(brushRange[0]))).attr('height',Math.max(1, iH))
+    .attr('fill','rgba(37,99,235,0.035)').attr('pointer-events','none');
+
+  visibleDisc.forEach((disc,discIndex)=>{
+    const pts = years.map(y=>({y, v: pubByDisc[disc][y]||0, disc}));
+
+    if(chartMode==='area'||chartMode==='line'){
+      if(chartMode==='area'){
+        const area = d3.area().x(d=>xScale(d.y)).y0(iH).y1(d=>yScale(d.v)).curve(d3.curveMonotoneX);
+        g.append('path').datum(pts).attr('d',area).attr('fill',COLORS[disc])
+          .attr('opacity',0).transition().duration(T.med).delay(discIndex*60).ease(d3.easeCubicOut).attr('opacity',0.15);
+      }
+      const line = d3.line().x(d=>xScale(d.y)).y(d=>yScale(d.v)).curve(d3.curveMonotoneX);
+      const path = g.append('path').datum(pts).attr('fill','none').attr('stroke',COLORS[disc])
+        .attr('stroke-width',2).attr('d',line).attr('opacity',0.92)
+        .attr('stroke-linecap','round').attr('stroke-linejoin','round');
+      strokeReveal(path, T.slow + discIndex*80);
+    } else if(chartMode==='bar'){
+      const bw = Math.max(1, iW/years.length * 0.28);
+      const off = DISCIPLINES.indexOf(disc) * bw - bw;
+      g.selectAll(`.bar-${slug(disc)}`).data(pts).join('rect')
+        .attr('class',`bar-${slug(disc)}`)
+        .attr('x',d=>xScale(d.y)+off-bw/2)
+        .attr('y',iH)
+        .attr('width',bw*0.85).attr('height',0)
+        .attr('fill',COLORS[disc]).attr('opacity',0.78).attr('rx',1)
+        .transition().duration(T.med).delay((d,i)=>Math.min(i*5,420)).ease(d3.easeCubicOut)
+        .attr('y',d=>yScale(d.v)).attr('height',d=>iH-yScale(d.v));
+    }
+
+    g.selectAll(`.dot-${slug(disc)}`).data(pts.filter((_,i)=>i%3===0)).join('circle')
+      .attr('class',`dot-${slug(disc)}`)
+      .attr('cx',d=>xScale(d.y)).attr('cy',d=>yScale(d.v))
+      .attr('r',0).attr('fill',COLORS[disc]).attr('opacity',0)
+      .on('mouseover',function(evt,d){
+        d3.select(this).interrupt().transition().duration(120).attr('r',4).attr('opacity',1);
+        showTT(evt.clientX,evt.clientY,`${disc} · ${d.y}`,(d.v).toLocaleString()+' 篇','可直接拖拽图面 BrushX 选取时间');
+      }).on('mouseout',function(){
+        d3.select(this).interrupt().transition().duration(120).attr('r',0).attr('opacity',0);hideTT();
+      });
+  });
+
+  if(chartMode==='area'||chartMode==='line'){
+    const totalLine = d3.line().x(d=>xScale(d.y)).y(d=>yScale(d.v)).curve(d3.curveMonotoneX);
+    const totalPath = g.append('path')
+      .datum(totalLineData)
+      .attr('class','total-line')
+      .attr('fill','none')
+      .attr('stroke','var(--text)')
+      .attr('stroke-width',2)
+      .attr('stroke-dasharray','6 5')
+      .attr('stroke-linecap','round')
+      .attr('opacity',0)
+      .attr('d',totalLine);
+
+    // 保持 Total 线为真正虚线：不要用 strokeReveal 覆盖 stroke-dasharray。
+    totalPath.transition().duration(T.med).ease(d3.easeCubicOut).attr('opacity',0.78);
+  }
+
+  const focus = g.append('g').style('display','none').style('pointer-events','none');
+  focus.append('line').attr('class','anno-line').attr('y1',0).attr('y2',iH);
+
+  const brushGroup = g.append('g').attr('class','brush-layer brush-layer-chart1');
+  const brush = d3.brushX()
+    .extent([[0,0],[iW,iH]])
+    .on('start brush', (evt)=>{
+      if(!evt.selection) return;
+      const [x0,x1] = evt.selection;
+      applyPubRange(xScale.invert(x0), xScale.invert(x1), 'brush', true);
+      selectedBackdrop.attr('x',x0).attr('width',Math.max(1, x1 - x0));
+    })
+    .on('end', (evt)=>{
+      if(!evt.selection){
+        applyPubRange(MIN_PUB_YEAR, MAX_PUB_YEAR, 'brush');
+        brushGroup.transition().duration(T.fast).call(brush.move, [xScale(MIN_PUB_YEAR), xScale(MAX_PUB_YEAR)]);
+        return;
+      }
+      const [x0,x1] = evt.selection;
+      const y0 = clamp(Math.round(xScale.invert(x0)), MIN_PUB_YEAR, MAX_PUB_YEAR);
+      const y1 = clamp(Math.round(xScale.invert(x1)), MIN_PUB_YEAR, MAX_PUB_YEAR);
+      applyPubRange(y0,y1,'brush');
+      if(evt.sourceEvent){
+        brushGroup.transition().duration(T.fast).ease(d3.easeCubicOut)
+          .call(brush.move, [xScale(y0), xScale(y1)]);
+      }
+    });
+  brushGroup.call(brush);
+  brushGroup.call(brush.move, [xScale(brushRange[0]), xScale(brushRange[1])]);
+  chart1BrushApi = {brush, group:brushGroup, xScale};
+
+  // Use the brush overlay itself for hover so the brush remains draggable on top of the area.
+  brushGroup.select('.overlay')
+    .on('mousemove.hover', function(evt){
+      const [mx] = d3.pointer(evt, this);
+      const yr = clamp(Math.round(xScale.invert(mx)), MIN_PUB_YEAR, MAX_PUB_YEAR);
+      focus.style('display',null);
+      focus.select('line').attr('x1',xScale(yr)).attr('x2',xScale(yr)).attr('stroke','#A8997A').attr('opacity',0.5);
+      const tipLines = DISCIPLINES.filter(d=>activeDisc1.has(d)).map(d=>{
+        const v = pubByDisc[d][yr]||0;
+        return `<div style="display:flex;align-items:center;gap:6px;margin:2px 0"><span style="width:9px;height:9px;border-radius:2px;background:${COLORS[d]};display:inline-block;flex-shrink:0"></span>${d}: <b>${v.toLocaleString()}</b></div>`;
+      }).join('');
+      const totalAtYear = DISCIPLINES.reduce((sum,d)=>sum+(pubByDisc[d][yr]||0),0);
+      const totalLine = `<div style="margin-top:5px;padding-top:5px;border-top:0.5px solid var(--border2)">Total: <b>${totalAtYear.toLocaleString()}</b></div>`;
+      showTT(evt.clientX, evt.clientY, `${yr} 年`, tipLines+totalLine, '虚线表示三学科年度总数；拖拽选区可平移；拖拽把手可缩放');
+    })
+    .on('mouseleave.hover',()=>{focus.style('display','none');hideTT();});
+
+  updateSummary(brushRange[0],brushRange[1]);
+  updatePeriodChips();
+}
+
+function updateSummary(y0,y1){
+  setText('sumRange',`${y0}–${y1}`);
+  let totals={Chemistry:0,Medicine:0,Physics:0};
+  allYears.filter(y=>y>=y0&&y<=y1).forEach(y=>{
+    DISCIPLINES.forEach(d=>{ totals[d]+=(pubByDisc[d][y]||0); });
+  });
+  animateNumber('sumChem',totals.Chemistry);
+  animateNumber('sumMed',totals.Medicine);
+  animateNumber('sumPhys',totals.Physics);
+  animateNumber('sumTotal',totals.Chemistry+totals.Medicine+totals.Physics);
+}
+
+function setMode(m){
+  chartMode=m;
+  document.querySelectorAll('#modeGroup .btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.mode===m);
+  });
+  drawChart1();
+}
+function setRange(y0,y1){
+  applyPubRange(y0,y1,'quick');
+  drawChart1();
+}
+
+/* ─── KEYBOARD INTERACTIONS ─── */
+document.addEventListener('keydown', e=>{
+  const tag = (e.target && e.target.tagName) || '';
+  if(tag==='INPUT' || tag==='TEXTAREA' || e.metaKey || e.ctrlKey) return;
+  const step = e.shiftKey ? 5 : 1;
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Escape','1','2','3'].includes(e.key)) e.preventDefault();
+  const span = brushRange[1]-brushRange[0];
+  if(e.key==='ArrowLeft') movePubBrushToRange(brushRange[0]-step, brushRange[1]-step);
+  else if(e.key==='ArrowRight') movePubBrushToRange(brushRange[0]+step, brushRange[1]+step);
+  else if(e.key==='ArrowUp') movePubBrushToRange(brushRange[0]-step, brushRange[1]+step);
+  else if(e.key==='ArrowDown' && span>2) movePubBrushToRange(brushRange[0]+step, brushRange[1]-step);
+  else if(e.key==='Escape') movePubBrushToRange(MIN_PUB_YEAR, MAX_PUB_YEAR);
+  else if(e.key==='1') setMode('line');
+  else if(e.key==='2') setMode('area');
+  else if(e.key==='3') setMode('bar');
+});
+window.setMode = setMode;
+window.setRange = setRange;
+window._vol_init = function(chem, med, phys) {
+  [['Chemistry',chem],['Medicine',med],['Physics',phys]].forEach(function(pair) {
+    var disc=pair[0], rows=pair[1];
+    pubByDisc[disc] = {};
+    rows.forEach(function(d) {
+      var yr = +d['Pub year'];
+      if (!isNaN(yr)) pubByDisc[disc][yr] = (pubByDisc[disc][yr]||0)+1;
+    });
+  });
+  var s = new Set();
+  DISCIPLINES.forEach(function(d){ Object.keys(pubByDisc[d]).forEach(function(y){ s.add(+y); }); });
+  allYears.push(...Array.from(s).sort(function(a,b){return a-b;}));
+  buildLegend('legend1', activeDisc1, function(){ drawChart1(); });
+  _drawn.vol = true;
+  window._redraw_vol = function(){ drawChart1(); updateSummary(brushRange[0], brushRange[1]); };
+};
+})();
+</script>
+
+<!-- 模块：Prize Gap -->
+<script>
+(function() {
+const COLORS = {Chemistry:'#2563EB', Medicine:'#0891B2', Physics:'#7C3AED'};
+const COLORS_A = {Chemistry:'rgba(37,99,235,0.10)', Medicine:'rgba(8,145,178,0.10)', Physics:'rgba(124,58,237,0.10)'};
+const DISCIPLINES = ['Chemistry','Medicine','Physics'];
+const MIN_PUB_YEAR = 1900, MAX_PUB_YEAR = 2018;
+const MIN_PRIZE_YEAR = 1900, MAX_PRIZE_YEAR = 2016;
+const T = {fast:220, med:520, slow:780};
+
+/* ─── STATE ─── */
+let chartMode = 'line';
+let brushRange = [MIN_PUB_YEAR, MAX_PUB_YEAR];
+let gapView = 'scatter';
+let maxGap = 60;
+let yearFrom = MIN_PRIZE_YEAR, yearTo = MAX_PRIZE_YEAR;
+let scatterDiscIndex = 0; // 0 = 全部，1–3 = 单个学科
+let activeChart = 'chart2';
+let activeDisc1 = new Set(DISCIPLINES);
+let chart1BrushApi = null;
+let chart2BrushApi = null;
+const numericMemory = new Map();
+
+/* ─── SMALL HELPERS ─── */
+const $ = id => document.getElementById(id);
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const fmtInt = v => Math.round(v).toLocaleString();
+const fmtDec = v => (+v).toFixed(1);
+function slug(s){ return String(s).replace(/[^a-z0-9]/gi,'-'); }
+function colorFor(d){ return COLORS[d] || '#64748B'; }
+function colorAFor(d){ return COLORS_A[d] || 'rgba(100,116,139,0.10)'; }
+function stableHash(str){
+  let h=2166136261;
+  for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); }
+  return (h>>>0)/4294967295;
+}
+function jitterFromKey(key, amp){ return (stableHash(key)-0.5)*amp; }
+function strokeReveal(sel, duration=T.slow){
+  sel.each(function(){
+    let len = 0;
+    try { len = this.getTotalLength(); } catch(e) { len = 0; }
+    if(!len) return;
+    d3.select(this)
+      .attr('stroke-dasharray',`${len} ${len}`)
+      .attr('stroke-dashoffset',len)
+      .transition().duration(duration).ease(d3.easeCubicOut)
+      .attr('stroke-dashoffset',0);
+  });
+}
+function animateNumber(id, value, decimals=0){
+  const el = $(id);
+  if(!el) return;
+  if(value==null || Number.isNaN(value)){
+    numericMemory.delete(id);
+    el.textContent = '–';
+    return;
+  }
+  const prev = numericMemory.has(id) ? numericMemory.get(id) : 0;
+  numericMemory.set(id, value);
+  d3.select(el).interrupt().transition()
+    .duration(T.med).ease(d3.easeCubicOut)
+    .tween('text', function(){
+      const interp = d3.interpolateNumber(prev, value);
+      return t => { el.textContent = decimals ? fmtDec(interp(t)) : fmtInt(interp(t)); };
+    });
+}
+function setText(id, value){ const el=$(id); if(el) el.textContent=value; }
+function makeFocusable(el, name, title){
+  el.setAttribute('tabindex','0');
+  el.setAttribute('role','img');
+  el.setAttribute('aria-label',title);
+  el.title = title;
+  el.addEventListener('mouseenter',()=>{ activeChart=name; });
+  el.addEventListener('focus',()=>{ activeChart=name; });
+}
+function noData(g,iW,iH,message='当前筛选条件下没有数据'){
+  g.append('text')
+    .attr('x',iW/2).attr('y',iH/2).attr('text-anchor','middle')
+    .attr('fill','var(--text3)').attr('font-size',13)
+    .text(message);
+}
+
+/* ─── TOOLTIP ─── */
+const tt = $('tooltip');
+function showTT(x, y, label, val, sub){
+  $('ttLabel').innerHTML = label;
+  $('ttVal').innerHTML = val;
+  $('ttSub').innerHTML = sub||'';
+  tt.style.left = (x+14)+'px';
+  tt.style.top = (y-10)+'px';
+  tt.classList.add('visible'); tt.style.opacity=1;
+}
+function hideTT(){tt.style.opacity=0;}
+document.addEventListener('mousemove', e=>{
+  if(tt.style.opacity==='1'){
+    tt.style.left=(e.clientX+14)+'px';
+    tt.style.top=(e.clientY-10)+'px';
+  }
+});
+
+/* ─── LEGENDS ─── */
+const SCATTER_FILTERS = [null, ...DISCIPLINES];
+function currentScatterDiscipline(){
+  const idx = ((scatterDiscIndex % SCATTER_FILTERS.length)+SCATTER_FILTERS.length)%SCATTER_FILTERS.length;
+  return SCATTER_FILTERS[idx];
+}
+function setScatterDiscipline(delta=1){
+  scatterDiscIndex = (scatterDiscIndex + delta + SCATTER_FILTERS.length) % SCATTER_FILTERS.length;
+  if(gapView !== 'scatter'){
+    setGapView('scatter');
+  } else {
+    drawChart2();
+  }
+}
+function setScatterFilter(index){
+  scatterDiscIndex = index;
+  if(gapView !== 'scatter') setGapView('scatter');
+  else drawChart2();
+}
+function buildLegend(id){
+  const el = $(id);
+  if(!el) return;
+  const selected = gapView==='scatter' ? currentScatterDiscipline() : null;
+  el.innerHTML = '';
+
+  if(gapView==='scatter'){
+    const label = document.createElement('div');
+    label.className = 'legend-label';
+    label.style.fontSize = '11px';
+    label.style.letterSpacing = '0.07em';
+    label.style.textTransform = 'uppercase';
+    label.style.color = 'var(--text3)';
+    label.style.alignSelf = 'center';
+    label.textContent = '排序（限散点）';
+    el.appendChild(label);
+
+    const allItem = document.createElement('div');
+    allItem.className = 'legend-item' + (selected===null ? ' active' : ' muted');
+    allItem.title = '显示全部学科散点';
+    allItem.innerHTML = `<div style="width:12px;height:12px;border-radius:3px;border:1.4px dashed var(--text2)"></div><span>全部</span>`;
+    allItem.onclick = ()=>setScatterFilter(0);
+    el.appendChild(allItem);
+
+    DISCIPLINES.forEach((d,i)=>{
+      const item = document.createElement('div');
+      const isSelectedScatter = d===selected;
+      item.className = 'legend-item' + (isSelectedScatter ? ' active' : ' muted');
+      item.title = '显示该学科的散点';
+      item.innerHTML = `<div class="legend-dot" style="background:${COLORS[d]}"></div><span>${d}</span>`;
+      item.onclick = ()=>setScatterFilter(i+1);
+      el.appendChild(item);
+    });
+  } else {
+    DISCIPLINES.forEach(d=>{
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.style.cursor = 'default';
+      item.title = '颜色图例；单学科筛选仅用于散点图';
+      item.innerHTML = `<div class="legend-dot" style="background:${COLORS[d]}"></div><span>${d}</span>`;
+      el.appendChild(item);
+    });
+  }
+}
+
+
+
+/* ═══════════════════════════════════════════════
+   CHART 2: Gap Analysis + BrushX / Single-Discipline Scatter / Animation
+═══════════════════════════════════════════════ */
+function getFilteredGap(overrideRange=null, discipline=null){
+  const range = overrideRange || [yearFrom, yearTo];
+  return gapData.filter(d=>
+    (!discipline || d.field===discipline) &&
+    d.gap<=maxGap &&
+    d.prize_year>=range[0] &&
+    d.prize_year<=range[1]
+  );
+}
+function getGapFieldOrder(){
+  return DISCIPLINES.slice();
+}
+function updateGapRangeInputs(y0,y1){
+  yearFrom = clamp(Math.round(y0), MIN_PRIZE_YEAR, MAX_PRIZE_YEAR);
+  yearTo = clamp(Math.round(y1), MIN_PRIZE_YEAR, MAX_PRIZE_YEAR);
+  if(yearFrom>yearTo) [yearFrom,yearTo] = [yearTo,yearFrom];
+  setText('yearFromVal',yearFrom); setText('yearToVal',yearTo);
+  $('yearFrom').value = yearFrom; $('yearTo').value = yearTo;
+}
+function applyGapRange(y0,y1, redraw=false){
+  updateGapRangeInputs(y0,y1);
+  updateGapSummary(getFilteredGap(null, gapView==='scatter' ? currentScatterDiscipline() : null));
+  if(redraw) drawChart2();
+}
+function moveGapBrushToRange(y0,y1){
+  updateGapRangeInputs(y0,y1);
+  if(chart2BrushApi){
+    chart2BrushApi.group.transition().duration(T.fast).ease(d3.easeCubicOut)
+      .call(chart2BrushApi.brush.move, [chart2BrushApi.xScale(yearFrom), chart2BrushApi.xScale(yearTo)]);
+    setTimeout(()=>drawChart2(), T.fast+20);
+  } else drawChart2();
+}
+function scatterFilterLabel(){
+  if(gapView !== 'scatter') return '全部学科';
+  return currentScatterDiscipline() || '全部学科';
+}
+
+
+function drawChart2(){
+  const wrap = $('chart2-wrap');
+  wrap.innerHTML='';
+  if (!isModuleVisible('gap')) return;
+  makeFocusable(wrap,'chart2','发表到获奖间隔图：散点/趋势可拖拽选取获奖年份；键盘可用 ←/→ 平移年份、↑/↓ 排序（限散点）：全部/单学科，1–4 切换图型，Esc 重置。');
+  const dim = chartDims(wrap, 900, gapView==='violin' ? 500 : 420);
+  if (!dim.ok) return;
+  const W = dim.W;
+  const H = gapView==='violin' ? 500 : dim.H;
+  wrap.style.height = H+'px';
+  const m = {t:20,r:20,b:50,l:52};
+  const iW = W-m.l-m.r, iH = H-m.t-m.b;
+  if (iW < 4 || iH < 4) return;
+
+  const svg = d3.select('#chart2-wrap').append('svg')
+    .attr('width',W).attr('height',H).attr('class','d3-chart');
+  const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+
+  buildLegend('legend2');
+  const scatterDisc = gapView==='scatter' ? currentScatterDiscipline() : null;
+  const data = getFilteredGap(null, scatterDisc);
+  updateGapSummary(data);
+  chart2BrushApi = null;
+
+  if(gapView==='scatter') drawScatter(g,data,iW,iH);
+  else if(gapView==='box') drawBox(g,data,iW,iH);
+  else if(gapView==='violin') drawViolin(g,data,iW,iH);
+  else drawTrend(g,data,iW,iH);
+
+  svg.append('text')
+    .attr('x',W-m.r).attr('y',H-8).attr('text-anchor','end')
+    .attr('font-size',10).attr('fill','var(--text3)')
+    .text(`键盘：←/→ 年份 · ↑/↓ 散点单学科（${scatterFilterLabel()}）· 1–4 图型 · Esc 重置`);
+}
+
+function installGapBrush(g, xScale, iW, iH, hoverHandler=null){
+  const brushGroup = g.append('g').attr('class','brush-layer brush-layer-chart2');
+  const brush = d3.brushX()
+    .extent([[0,0],[iW,iH]])
+    .on('start brush', evt=>{
+      if(!evt.selection) return;
+      const [x0,x1] = evt.selection;
+      applyGapRange(xScale.invert(x0), xScale.invert(x1), false);
+    })
+    .on('end', evt=>{
+      if(!evt.selection){
+        updateGapRangeInputs(MIN_PRIZE_YEAR, MAX_PRIZE_YEAR);
+        brushGroup.transition().duration(T.fast).call(brush.move, [xScale(MIN_PRIZE_YEAR), xScale(MAX_PRIZE_YEAR)]);
+        setTimeout(()=>drawChart2(), T.fast+20);
+        return;
+      }
+      const [x0,x1] = evt.selection;
+      const y0 = clamp(Math.round(xScale.invert(x0)), MIN_PRIZE_YEAR, MAX_PRIZE_YEAR);
+      const y1 = clamp(Math.round(xScale.invert(x1)), MIN_PRIZE_YEAR, MAX_PRIZE_YEAR);
+      updateGapRangeInputs(y0,y1);
+      if(evt.sourceEvent){
+        brushGroup.transition().duration(T.fast).ease(d3.easeCubicOut)
+          .call(brush.move, [xScale(yearFrom), xScale(yearTo)]);
+        setTimeout(()=>drawChart2(), T.fast+40);
+      }
+    });
+  brushGroup.call(brush);
+  brushGroup.call(brush.move, [xScale(yearFrom), xScale(yearTo)]);
+  if(hoverHandler){
+    brushGroup.select('.overlay')
+      .on('mousemove.hover', hoverHandler)
+      .on('mouseleave.hover', hideTT);
+  }
+  chart2BrushApi = {brush, group:brushGroup, xScale};
+}
+
+function drawScatter(g,data,iW,iH){
+  const xScale = d3.scaleLinear().domain([MIN_PRIZE_YEAR, MAX_PRIZE_YEAR]).range([0,iW]);
+  const yMax = Math.max(5, d3.max(getFilteredGap([MIN_PRIZE_YEAR, MAX_PRIZE_YEAR]),d=>d.gap) || maxGap);
+  const yScale = d3.scaleLinear().domain([0, Math.min(maxGap, yMax)+3]).range([iH,0]).nice();
+
+  g.append('g').attr('class','grid').call(d3.axisLeft(yScale).ticks(6).tickSize(-iW).tickFormat(''));
+  g.append('g').attr('transform',`translate(0,${iH})`).call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.format('d')));
+  g.append('g').call(d3.axisLeft(yScale).ticks(6));
+
+  const scatterDisc = currentScatterDiscipline();
+  const scatterLabel = scatterDisc || '全部学科';
+  if(!data.length){
+    noData(g,iW,iH,`${scatterLabel} 在当前筛选条件下没有数据`);
+    installGapBrush(g,xScale,iW,iH);
+    return;
+  }
+
+  g.append('text')
+    .attr('x',iW)
+    .attr('y',12)
+    .attr('text-anchor','end')
+    .attr('font-size',11)
+    .attr('font-family',"'DM Mono',monospace")
+    .attr('fill',scatterDisc ? COLORS[scatterDisc] : 'var(--text2)')
+    .text(scatterDisc ? `Scatter: ${scatterDisc} only` : 'Scatter: All disciplines');
+
+  (scatterDisc ? [scatterDisc] : DISCIPLINES).forEach(disc=>{
+    const pts = data.filter(d=>d.field===disc);
+    if(!pts.length) return;
+    const avg = d3.mean(pts,d=>d.gap);
+    g.append('line').attr('class','avg-line')
+      .attr('x1',0).attr('x2',0).attr('y1',yScale(avg)).attr('y2',yScale(avg))
+      .attr('stroke',COLORS[disc]).attr('opacity',0.35)
+      .transition().duration(T.med).ease(d3.easeCubicOut).attr('x2',iW);
+    g.append('text').attr('x',iW+3).attr('y',yScale(avg)+4)
+      .attr('font-size',9).attr('fill',COLORS[disc]).attr('opacity',0)
+      .text(`${disc.slice(0,4)} avg ${avg.toFixed(1)}y`)
+      .transition().duration(T.med).delay(180).attr('opacity',0.7);
+  });
+
+  const dots = g.selectAll('.dot').data(data, d=>`${d.field}-${d.prize_year}-${d.pub_year}-${d.laureate}-${d.gap}`).join('circle')
+    .attr('class','dot')
+    .attr('cx',d=>xScale(d.prize_year)+jitterFromKey(`${d.laureate}-${d.pub_year}`,6))
+    .attr('cy',d=>yScale(d.gap)+jitterFromKey(`${d.field}-${d.prize_year}-${d.gap}`,6))
+    .attr('r',0)
+    .attr('fill',d=>COLORS[d.field])
+    .attr('opacity',0.55)
+    .attr('stroke',d=>COLORS[d.field])
+    .attr('stroke-width',0.5)
+    .on('mouseover',function(evt,d){
+      d3.select(this).interrupt().transition().duration(120).attr('r',7).attr('opacity',1);
+      showTT(evt.clientX,evt.clientY,`${d.laureate}`,`${d.gap} 年`,`${d.field} · 发表 ${d.pub_year} · 获奖 ${d.prize_year}`);
+    }).on('mouseout',function(){d3.select(this).interrupt().transition().duration(120).attr('r',4.5).attr('opacity',0.55);hideTT();});
+  dots.transition().duration(T.med).delay((d,i)=>Math.min(i*2,350)).ease(d3.easeBackOut.overshoot(1.3)).attr('r',4.5);
+
+  g.append('text').attr('class','axis-label').attr('x',iW/2).attr('y',iH+40).attr('text-anchor','middle').text('获奖年份');
+  g.append('text').attr('class','axis-label').attr('transform','rotate(-90)').attr('x',-iH/2).attr('y',-40).attr('text-anchor','middle').text('发表至获奖间隔（年）');
+
+  installGapBrush(g,xScale,iW,iH,function(evt){
+    const [mx,my] = d3.pointer(evt, this);
+    const yr = Math.round(xScale.invert(mx));
+    const gap = yScale.invert(my);
+    const nearest = d3.least(data, d=>Math.abs(d.prize_year-yr)*2 + Math.abs(d.gap-gap));
+    if(nearest && Math.abs(xScale(nearest.prize_year)-mx)<26 && Math.abs(yScale(nearest.gap)-my)<26){
+      showTT(evt.clientX,evt.clientY,`${nearest.laureate}`,`${nearest.gap} 年`,`${nearest.field} · 发表 ${nearest.pub_year} · 获奖 ${nearest.prize_year} · 拖拽可改年份范围`);
+    } else {
+      showTT(evt.clientX,evt.clientY,'BrushX 年份筛选',`${yearFrom}–${yearTo}`,`当前散点学科：${currentScatterDiscipline()} · n=${data.length}`);
+    }
+  });
+}
+
+function drawBox(g,data,iW,iH){
+  const fields = getGapFieldOrder(data);
+  const xScale = d3.scaleBand().domain(fields).range([0,iW]).padding(0.5);
+  const yScale = d3.scaleLinear().domain([0,Math.max(5,d3.max(getFilteredGap([MIN_PRIZE_YEAR,MAX_PRIZE_YEAR]),d=>d.gap)||maxGap)+5]).range([iH,0]).nice();
+
+  g.append('g').attr('class','grid').call(d3.axisLeft(yScale).ticks(6).tickSize(-iW).tickFormat(''));
+  g.append('g').attr('transform',`translate(0,${iH})`).call(d3.axisBottom(xScale).tickSize(0)).select('.domain').remove();
+  g.append('g').call(d3.axisLeft(yScale).ticks(6));
+  if(!data.length){ noData(g,iW,iH); return; }
+
+  fields.forEach((disc,idx)=>{
+    const raw = data.filter(d=>d.field===disc).map(d=>d.gap).sort(d3.ascending);
+    if(!raw.length) return;
+    const q1=d3.quantile(raw,0.25), med=d3.quantile(raw,0.5), q3=d3.quantile(raw,0.75);
+    const iqr=q3-q1;
+    const wLo=Math.max(d3.min(raw), q1-1.5*iqr);
+    const wHi=Math.min(d3.max(raw), q3+1.5*iqr);
+    const c=COLORS[disc];
+    const bx=xScale(disc)+xScale.bandwidth()/2;
+    const hw=Math.min(xScale.bandwidth()*0.38, 44);
+
+    g.append('rect').attr('x',bx-hw).attr('y',yScale(med)).attr('width',hw*2).attr('height',0)
+      .attr('fill',c).attr('opacity',0.12).attr('rx',3)
+      .transition().duration(T.med).delay(idx*90).ease(d3.easeCubicOut)
+      .attr('y',yScale(q3)).attr('height',Math.max(1,yScale(q1)-yScale(q3)));
+    g.append('rect').attr('x',bx-hw).attr('y',yScale(med)).attr('width',hw*2).attr('height',0)
+      .attr('fill','none').attr('stroke',c).attr('stroke-width',1.5).attr('rx',3)
+      .transition().duration(T.med).delay(idx*90).ease(d3.easeCubicOut)
+      .attr('y',yScale(q3)).attr('height',Math.max(1,yScale(q1)-yScale(q3)));
+    g.append('line').attr('x1',bx-hw).attr('x2',bx+hw).attr('y1',yScale(med)).attr('y2',yScale(med))
+      .attr('stroke',c).attr('stroke-width',0)
+      .transition().duration(T.fast).delay(idx*90+T.med).attr('stroke-width',2.5);
+    g.append('line').attr('x1',bx).attr('x2',bx).attr('y1',yScale(q3)).attr('y2',yScale(q3))
+      .attr('stroke',c).attr('stroke-width',1).attr('opacity',0.5)
+      .transition().duration(T.med).delay(idx*90).attr('y1',yScale(wHi));
+    g.append('line').attr('x1',bx).attr('x2',bx).attr('y1',yScale(q1)).attr('y2',yScale(q1))
+      .attr('stroke',c).attr('stroke-width',1).attr('opacity',0.5)
+      .transition().duration(T.med).delay(idx*90).attr('y2',yScale(wLo));
+    [wLo,wHi].forEach(v=>{
+      g.append('line').attr('x1',bx-hw*0.4).attr('x2',bx+hw*0.4).attr('y1',yScale(v)).attr('y2',yScale(v))
+        .attr('stroke',c).attr('stroke-width',1).attr('opacity',0)
+        .transition().duration(T.fast).delay(idx*90+T.med).attr('opacity',0.5);
+    });
+    raw.forEach((v,i)=>{
+      const jx=jitterFromKey(`${disc}-${v}-${i}`,hw*0.8);
+      g.append('circle').attr('cx',bx+jx).attr('cy',yScale(v)).attr('r',0)
+        .attr('fill',c).attr('opacity',0.35)
+        .transition().duration(T.fast).delay(idx*90+Math.min(i*2,240)).ease(d3.easeBackOut.overshoot(1.2)).attr('r',2.5);
+    });
+    const avg=d3.mean(raw);
+    g.append('circle').attr('cx',bx).attr('cy',yScale(avg)).attr('r',0)
+      .attr('fill','#fff').attr('stroke',c).attr('stroke-width',2)
+      .on('mouseover',(evt)=>showTT(evt.clientX,evt.clientY,disc,`avg ${avg.toFixed(1)} 年`,`中位 ${med.toFixed(1)} 年 · n=${raw.length}`))
+      .on('mouseout',hideTT)
+      .transition().duration(T.fast).delay(idx*90+T.med).ease(d3.easeBackOut.overshoot(1.5)).attr('r',5);
+    g.append('text').attr('x',bx).attr('y',yScale(wHi)-8).attr('text-anchor','middle')
+      .attr('font-size',11).attr('fill',c).attr('font-family',"'DM Mono',monospace")
+      .attr('opacity',0).text(`med ${med.toFixed(0)}y`)
+      .transition().duration(T.fast).delay(idx*90+T.med).attr('opacity',1);
+  });
+
+  g.append('text').attr('class','axis-label').attr('x',iW/2).attr('y',iH+40).attr('text-anchor','middle').text('Discipline');
+  g.append('text').attr('class','axis-label').attr('transform','rotate(-90)').attr('x',-iH/2).attr('y',-40).attr('text-anchor','middle').text('Years from publication to prize');
+}
+
+function drawViolin(g,data,iW,iH){
+  const fields = getGapFieldOrder(data);
+  const xScale = d3.scaleBand().domain(fields).range([0,iW]).padding(0.25);
+  const maxY = Math.max(5,d3.max(getFilteredGap([MIN_PRIZE_YEAR,MAX_PRIZE_YEAR]),d=>d.gap)||maxGap)+5;
+  const yScale = d3.scaleLinear().domain([0,maxY]).range([iH,0]).nice();
+
+  g.append('g').attr('class','grid').call(d3.axisLeft(yScale).ticks(6).tickSize(-iW).tickFormat(''));
+  g.append('g').attr('transform',`translate(0,${iH})`).call(d3.axisBottom(xScale));
+  g.append('g').call(d3.axisLeft(yScale).ticks(6));
+  if(!data.length){ noData(g,iW,iH); return; }
+
+  fields.forEach((disc,idx)=>{
+    const pts = data.filter(d=>d.field===disc).map(d=>d.gap);
+    if(!pts.length) return;
+    const c=COLORS[disc];
+    const x0=xScale(disc), bw=xScale.bandwidth();
+    const kde = kernelDensityEstimator(kernelEpanechnikov(4), yScale.ticks(40));
+    const density = kde(pts);
+    const maxDensity = d3.max(density,d=>d[1]) || 1;
+    const violinWidth = d3.scaleLinear().domain([0,maxDensity]).range([0,bw/2]);
+    const area = d3.area()
+      .x0(d=>x0+bw/2-violinWidth(d[1]))
+      .x1(d=>x0+bw/2+violinWidth(d[1]))
+      .y(d=>yScale(d[0]))
+      .curve(d3.curveCatmullRom);
+
+    g.append('path').datum(density).attr('d',area)
+      .attr('fill',c).attr('opacity',0).attr('stroke',c).attr('stroke-width',1.5)
+      .transition().duration(T.med).delay(idx*100).ease(d3.easeCubicOut).attr('opacity',0.25);
+    const mean = d3.mean(pts);
+    g.append('circle').attr('cx',x0+bw/2).attr('cy',yScale(mean))
+      .attr('r',0).attr('fill',c).attr('opacity',0.9)
+      .on('mouseover',(evt)=>showTT(evt.clientX,evt.clientY,disc,`${mean.toFixed(1)} 年 (avg)`,`n=${pts.length} 篇`))
+      .on('mouseout',hideTT)
+      .transition().duration(T.fast).delay(idx*100+T.med).ease(d3.easeBackOut.overshoot(1.5)).attr('r',5);
+    const subPts = pts.length>50 ? pts.filter((_,i)=>i%2===0) : pts;
+    g.selectAll(`.vdot-${slug(disc)}`).data(subPts).join('circle')
+      .attr('class',`vdot-${slug(disc)}`)
+      .attr('cx',(d,i)=>x0+bw/2+jitterFromKey(`${disc}-${d}-${i}`,bw*0.35))
+      .attr('cy',d=>yScale(d))
+      .attr('r',0).attr('fill',c).attr('opacity',0.35)
+      .transition().duration(T.fast).delay((d,i)=>idx*100+Math.min(i*3,300)).ease(d3.easeBackOut.overshoot(1.2)).attr('r',2.5);
+  });
+
+  g.append('text').attr('class','axis-label').attr('x',iW/2).attr('y',iH+40).attr('text-anchor','middle').text('Field');
+  g.append('text').attr('class','axis-label').attr('transform','rotate(-90)').attr('x',-iH/2).attr('y',-40).attr('text-anchor','middle').text('间隔分布（年）');
+}
+function kernelDensityEstimator(kernel, X){ return function(V){ return X.map(x=>[x, d3.mean(V, v=>kernel(x-v))]); }; }
+function kernelEpanechnikov(k){ return function(v){ return Math.abs(v/=k)<=1 ? 0.75*(1-v*v)/k : 0; }; }
+
+function drawTrend(g,data,iW,iH){
+  const decades = [1900,1910,1920,1930,1940,1950,1960,1970,1980,1990,2000,2010];
+  const fields = getGapFieldOrder(data);
+  const binned = fields.map(disc=>{
+    const pts = data.filter(d=>d.field===disc);
+    return {disc, bins: decades.map(dec=>{
+      const inBin = pts.filter(d=>d.prize_year>=dec&&d.prize_year<dec+10);
+      return {decade:dec+5, avg: inBin.length>0 ? d3.mean(inBin,d=>d.gap) : null, n: inBin.length};
+    }).filter(b=>b.avg!==null)};
+  });
+  const xScale = d3.scaleLinear().domain([MIN_PRIZE_YEAR,2020]).range([0,iW]);
+  const allAvgs = binned.flatMap(b=>b.bins.map(b=>b.avg));
+  const yScale = d3.scaleLinear().domain([0,Math.max(5,d3.max(allAvgs)||maxGap)+5]).range([iH,0]).nice();
+
+  g.append('g').attr('class','grid').call(d3.axisLeft(yScale).ticks(5).tickSize(-iW).tickFormat(''));
+  g.append('g').attr('transform',`translate(0,${iH})`).call(d3.axisBottom(xScale).ticks(6).tickFormat(d=>d));
+  g.append('g').call(d3.axisLeft(yScale).ticks(5));
+  if(!allAvgs.length){
+    noData(g,iW,iH);
+    installGapBrush(g,xScale,iW,iH);
+    return;
+  }
+
+  binned.forEach(({disc, bins},idx)=>{
+    if(!bins.length) return;
+    const c=COLORS[disc];
+    const line = d3.line().x(d=>xScale(d.decade)).y(d=>yScale(d.avg)).curve(d3.curveCatmullRom);
+    const area = d3.area().x(d=>xScale(d.decade)).y0(iH).y1(d=>yScale(d.avg)).curve(d3.curveCatmullRom);
+    g.append('path').datum(bins).attr('d',area).attr('fill',c).attr('opacity',0)
+      .transition().duration(T.med).delay(idx*90).attr('opacity',0.09);
+    const path = g.append('path').datum(bins).attr('fill','none').attr('d',line)
+      .attr('stroke',c).attr('stroke-width',2.5).attr('stroke-linecap','round').attr('stroke-linejoin','round');
+    strokeReveal(path, T.slow+idx*80);
+    g.selectAll(`.tdot-${slug(disc)}`).data(bins).join('circle')
+      .attr('class',`tdot-${slug(disc)}`)
+      .attr('cx',d=>xScale(d.decade)).attr('cy',d=>yScale(d.avg))
+      .attr('r',0).attr('fill','#fff').attr('stroke',c).attr('stroke-width',2)
+      .on('mouseover',(evt,d)=>showTT(evt.clientX,evt.clientY,`${disc} · ${d.decade-5}s`,`${d.avg.toFixed(1)} 年`,`n=${d.n} 篇获奖论文 · 拖拽可改年份范围`))
+      .on('mouseout',hideTT)
+      .transition().duration(T.fast).delay((d,i)=>idx*90+i*45).ease(d3.easeBackOut.overshoot(1.4)).attr('r',5.5);
+    const last = bins[bins.length-1];
+    g.append('text').attr('x',xScale(last.decade)+8).attr('y',yScale(last.avg)+4)
+      .attr('font-size',10).attr('fill',c).attr('opacity',0).text(disc.slice(0,4))
+      .transition().duration(T.fast).delay(T.med+idx*90).attr('opacity',1);
+  });
+
+  g.append('text').attr('class','axis-label').attr('x',iW/2).attr('y',iH+40).attr('text-anchor','middle').text('获奖年份（10年分组）');
+  g.append('text').attr('class','axis-label').attr('transform','rotate(-90)').attr('x',-iH/2).attr('y',-40).attr('text-anchor','middle').text('平均间隔（年）');
+  installGapBrush(g,xScale,iW,iH,function(evt){
+    showTT(evt.clientX,evt.clientY,'BrushX 获奖年份',`${yearFrom}–${yearTo}`,'拖拽图面选取年份');
+  });
+}
+
+function updateGapSummary(data){
+  ['Physics','Chemistry','Medicine'].forEach((f,i)=>{
+    const id=['gAvgP','gAvgC','gAvgM'][i];
+    const pts = data.filter(d=>d.field===f);
+    animateNumber(id, pts.length ? d3.mean(pts,d=>d.gap) : null, 1);
+  });
+  animateNumber('gMax', data.length ? d3.max(data,d=>d.gap) : null, 0);
+}
+
+/* ─── CONTROLS ─── */
+function setGapView(v){
+  gapView=v;
+  document.querySelectorAll('#chartTypeTabs .tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.view === v);
+  });
+  drawChart2();
+}
+function setMaxGap(v){
+  maxGap=+v;
+  setText('maxGapVal',v);
+  drawChart2();
+}
+function setYearFrom(v){
+  v=+v; if(v>yearTo-5) v=yearTo-5;
+  updateGapRangeInputs(v,yearTo);
+  drawChart2();
+}
+function setYearTo(v){
+  v=+v; if(v<yearFrom+5) v=yearFrom+5;
+  updateGapRangeInputs(yearFrom,v);
+  drawChart2();
+}
+
+/* ─── KEYBOARD INTERACTIONS ─── */
+document.addEventListener('keydown', e=>{
+  const tag = (e.target && e.target.tagName) || '';
+  if(tag==='INPUT' || tag==='TEXTAREA' || e.metaKey || e.ctrlKey) return;
+  const step = e.shiftKey ? 5 : 1;
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Escape','1','2','3','4','[',']'].includes(e.key)) e.preventDefault();
+  if(e.key==='ArrowLeft') moveGapBrushToRange(yearFrom-step, yearTo-step);
+  else if(e.key==='ArrowRight') moveGapBrushToRange(yearFrom+step, yearTo+step);
+  else if(e.key==='ArrowUp') setScatterDiscipline(-1);
+  else if(e.key==='ArrowDown') setScatterDiscipline(1);
+  else if(e.key==='[') setMaxGap(clamp(maxGap-step,5,60));
+  else if(e.key===']') setMaxGap(clamp(maxGap+step,5,60));
+  else if(e.key==='Escape') { maxGap=60; setText('maxGapVal',60); $('maxGap').value=60; updateGapRangeInputs(MIN_PRIZE_YEAR,MAX_PRIZE_YEAR); scatterDiscIndex=0; drawChart2(); }
+  else if(e.key==='1') setGapView('scatter');
+  else if(e.key==='2') setGapView('box');
+  else if(e.key==='3') setGapView('violin');
+  else if(e.key==='4') setGapView('trend');
+});
+window.setGapView = setGapView;
+window.setMaxGap = setMaxGap;
+window.setYearFrom = setYearFrom;
+window.setYearTo = setYearTo;
+window._pg_init = function(prizeRows) {
+  gapData = prizeRows.map(function(d) {
+    var pz=+d['Prize year'], pb=+d['Pub year'];
+    return {field:d['Field'],prize_year:pz,pub_year:pb,gap:pz-pb,laureate:d['Laureate name']||''};
+  }).filter(function(d){ return !isNaN(d.prize_year)&&!isNaN(d.pub_year)&&d.gap>=0; });
+  window._shared_gap = gapData;
+  buildLegend('legend2');
+  _drawn.gap = true;
+  window._redraw_gap = function(){
+    drawChart2();
+    updateGapSummary(getFilteredGap(null, gapView==='scatter'?currentScatterDiscipline():null));
+  };
+};
+})();
+</script>
+
+<!-- 模块：Lifecycle Halo -->
+<script>
+(function() {
+const FIELD_ORDER = ["All", "Chemistry", "Medicine", "Physics"];
+const FIELD_LABEL = {All:"Total", Chemistry:"Chemistry", Medicine:"Medicine", Physics:"Physics"};
+const LEGEND_LABEL = {All:"Total", Chemistry:"Chemistry", Medicine:"Medicine", Physics:"Physics"};
+const FIELD_CLASS = {All:"", Chemistry:"c-chem", Medicine:"c-med", Physics:"c-phys"};
+const PHASES = [
+  {key:"all", label:"全部", range:[-40,25]},
+  {key:"build", label:"积累", range:[-40,-16]},
+  {key:"ramp", label:"升温", range:[-15,-6]},
+  {key:"peak", label:"峰值", range:[-5,0]},
+  {key:"after", label:"回落", range:[1,10]},
+  {key:"echo", label:"余波", range:[11,25]}
+];
+const state = { metric:"meanCount", focus:"All", phase:"all", selectedYear:-4, stretch:1.6 };
+const colors = {
+  All:"#64748B",
+  Chemistry:getCss("--c1"),
+  Medicine:getCss("--c2"),
+  Physics:getCss("--c3")
+};
+const normKey = { meanCount:"normMean", activeShare:"normShare" };
+const tooltip = d3.select("#tooltip");
+let svg, rulerSvg, dims, angleScale, currentData, fieldMax = {};
+
+function getCss(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function fmtComma(v){ return d3.format(",")(Math.round(v)); }
+function fmtK(v){ return v>=1000 ? d3.format(".1f")(v/1000)+"k" : String(Math.round(v)); }
+function relLabel(y){ return y<0 ? `获奖前 ${Math.abs(y)} 年` : y>0 ? `获奖后 ${y} 年` : "获奖当年"; }
+function rangeLabel(r){ return r[0]===r[1] ? relLabel(r[0]) : `${relLabel(r[0])} – ${relLabel(r[1])}`; }
+function activePhase(){ return PHASES.find(d=>d.key===state.phase) || PHASES[0]; }
+function inRange(y, r){ return y>=r[0] && y<=r[1]; }
+function fieldVisible(field){ return state.focus==="All" || field===state.focus || field==="All"; }
+function ringFields(){ return ["Chemistry","Medicine","Physics","All"]; }
+
+function init(){
+  lifeRecords.forEach(d=>{
+    d.relYear=+d.relYear; d.meanCount=+d.meanCount; d.activeShare=+d.activeShare;
+    d.totalCount=+d.totalCount; d.activeAuthors=+d.activeAuthors;
+    d.normMean=+d.normMean; d.normShare=+d.normShare;
+  });
+  currentData = lifeRecords;
+  FIELD_ORDER.forEach(f=>{
+    fieldMax[f] = {
+      meanCount:d3.max(currentData.filter(d=>d.field===f), d=>d.meanCount) || 1,
+      activeShare:d3.max(currentData.filter(d=>d.field===f), d=>d.activeShare) || 1
+    };
+  });
+  renderLegend();
+  renderPhaseChips();
+  d3.selectAll("#metricGroup .btn").on("click", function(){
+    state.metric = this.dataset.metric;
+    d3.selectAll("#metricGroup .btn").classed("active", false);
+    d3.select(this).classed("active", true);
+    updateChart(true);
+  });
+  d3.select("#stretchRange").on("input", function(){
+    state.stretch = +this.value;
+    d3.select("#stretchVal").text(d3.format(".1f")(state.stretch) + "×");
+    updateChart(true);
+  });
+  if (!window._lcResizeBound) {
+    window._lcResizeBound = true;
+    window.addEventListener("resize", function(){
+      if (isModuleVisible('cyc')) draw();
+    });
+  }
+}
+
+function renderLegend(){
+  const legend = d3.select("#fieldLegend");
+  const items = legend.selectAll(".legend-item").data(FIELD_ORDER).join("div")
+    .attr("class", d=>`legend-item ${state.focus===d?"active":""}`)
+    .on("click", (_, d)=>{ state.focus=d; renderLegend(); updateChart(true); });
+  items.html(d=>`<span class="legend-dot" style="background:${colors[d]}"></span><span>${LEGEND_LABEL[d]}</span>`);
+}
+
+function renderPhaseChips(){
+  const chips = d3.select("#phaseChips").selectAll("button").data(PHASES).join("button")
+    .attr("class", d=>`phase-chip ${state.phase===d.key?"active":""}`)
+    .text(d=>d.label)
+    .on("click", (_, d)=>{ state.phase=d.key; state.selectedYear = Math.max(d.range[0], Math.min(d.range[1], state.selectedYear)); renderPhaseChips(); updateChart(true); });
+}
+
+function draw(){
+  if (!isModuleVisible('cyc')) return;
+  const wrap = document.getElementById("lifecycle-wrap");
+  const dim = chartDims(wrap, 1000, 620);
+  if (!dim.ok) return;
+  const width = Math.max(760, dim.W);
+  const height = Math.max(400, dim.H);
+  const radiusMax = Math.min(width*0.43, height*0.47, 300);
+  dims = { width, height, cx:width/2, cy:height*0.58, radiusMax };
+  d3.select(wrap).selectAll("*").remove();
+  svg = d3.select(wrap).append("svg").attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
+  angleScale = d3.scaleLinear().domain([-40,0,25]).range([-Math.PI*0.72,0,Math.PI*0.72]).clamp(true);
+
+  svg.append("defs").append("filter").attr("id","softGlow").html(`<feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>`);
+  const g = svg.append("g").attr("transform", `translate(${dims.cx},${dims.cy})`);
+  g.append("circle").attr("r", radiusMax*0.31).attr("fill", "var(--surface2)").attr("stroke", "var(--border)").attr("stroke-width", .5);
+  g.append("text").attr("class","center-title").attr("y", -10).text(relLabel(state.selectedYear).replace(" ", ""));
+  g.append("text").attr("class","center-sub").attr("y", 20).text("相对获奖年份");
+  g.append("text").attr("class","center-micro").attr("y", 43).text("");
+
+  const ringLayout = {
+    Chemistry:{inner:radiusMax*0.34, maxWidth:radiusMax*0.105},
+    Medicine:{inner:radiusMax*0.49, maxWidth:radiusMax*0.105},
+    Physics:{inner:radiusMax*0.64, maxWidth:radiusMax*0.105},
+    All:{inner:radiusMax*0.79, maxWidth:radiusMax*0.135}
+  };
+  const rings = ringFields().map(f=>({field:f, ...ringLayout[f]}));
+  const bgArc = d3.arc().startAngle(angleScale(-40)).endAngle(angleScale(25));
+  g.selectAll(".halo-bg").data(rings).join("path")
+    .attr("class","halo-bg")
+    .attr("d", d=>bgArc.innerRadius(d.inner+7).outerRadius(d.inner+7)())
+    .attr("stroke", d=>colors[d.field])
+    .attr("opacity", .12);
+
+  const prizeA = angleScale(0);
+  g.append("line").attr("class","prize-axis")
+    .attr("x1", Math.sin(prizeA)*radiusMax*.35).attr("y1", -Math.cos(prizeA)*radiusMax*.35)
+    .attr("x2", Math.sin(prizeA)*radiusMax*.98).attr("y2", -Math.cos(prizeA)*radiusMax*.98);
+  g.append("circle").attr("class","prize-dot").attr("cx", Math.sin(prizeA)*radiusMax*.99).attr("cy", -Math.cos(prizeA)*radiusMax*.99).attr("r",5);
+  g.append("text").attr("class","halo-label").attr("x", Math.sin(prizeA)*radiusMax*1.06).attr("y", -Math.cos(prizeA)*radiusMax*1.06-4).attr("text-anchor","middle").text("Prize Year");
+
+  // Ring labels are intentionally omitted; the compact legend above explains ring order.
+
+  const segData = [];
+  rings.forEach(r=>{
+    currentData.filter(d=>d.field===r.field).forEach(d=>segData.push({...d, ...r}));
+  });
+  const segments = g.append("g").attr("class","segments")
+    .selectAll("path").data(segData, d=>d.field+":"+d.relYear).join("path")
+    .attr("class", d=>segmentClass(d))
+    .attr("fill", d=>colors[d.field])
+    .attr("opacity", d=>segmentOpacity(d))
+    .attr("d", d=>arcFor(d, 0.001))
+    .on("mousemove", function(event, d){
+      state.selectedYear = d.relYear;
+      updateCenter();
+      updateSegmentStates();
+      updateRulerStates();
+      showTooltip(event, d);
+    })
+    .on("mouseleave", hideTooltip)
+    .on("click", (_, d)=>{
+      state.selectedYear=d.relYear;
+      state.phase="custom";
+      setCustomPhase(d.relYear,d.relYear);
+      renderPhaseChips();
+      updateChart(true);
+    });
+  segments.transition().duration(760).delay(d=>Math.max(0,d.relYear+40)*8).ease(d3.easeCubicOut)
+    .attr("d", d=>arcFor(d, valueNorm(d)));
+
+  drawPeakPins(g, rings, radiusMax);
+  drawPhaseArcs(g, radiusMax);
+  drawRuler();
+  updateSummary();
+  attachKeyboard(wrap);
+}
+
+function setCustomPhase(a,b){
+  const existing = PHASES.find(p=>p.key==="custom");
+  if(existing) existing.range=[a,b];
+  else PHASES.push({key:"custom", label:"自选年份", range:[a,b]});
+  state.phase="custom";
+}
+
+
+function drawPeakPins(g, rings, radiusMax){
+  const peaks = rings.map(r=>{
+    const rows = currentData.filter(d=>d.field===r.field);
+    const d = rows.reduce((a,b)=> !a || b[state.metric]>a[state.metric] ? b : a, null);
+    return d ? {...d, ...r} : null;
+  }).filter(Boolean);
+  const pins = g.append("g").attr("class","peak-pins")
+    .selectAll("g").data(peaks, d=>d.field).join("g")
+    .attr("class","peak-pin")
+    .attr("transform", d=>{
+      const a=angleScale(d.relYear);
+      const rr=d.inner + 8 + Math.min(d.maxWidth*(d.field==="All"?1.52:1.38), Math.pow(Math.max(0,valueNorm(d)-0.04)/0.96,1.28)*d.maxWidth*state.stretch) + 8;
+      return `translate(${Math.sin(a)*rr},${-Math.cos(a)*rr})`;
+    });
+  pins.append("circle").attr("r",0).transition().duration(520).delay(460).attr("r",3.6);
+}
+
+function drawPhaseArcs(g, radiusMax){
+  const phaseG = g.append("g").attr("class","phase-guides");
+  const arcLine = d3.arc().innerRadius(radiusMax*1.02).outerRadius(radiusMax*1.02);
+  phaseG.selectAll("path").data(PHASES.filter(d=>d.key!=="all" && d.key!=="custom")).join("path")
+    .attr("class", d=>`phase-arc ${state.phase===d.key?"active":""}`)
+    .attr("d", d=>arcLine.startAngle(angleScale(d.range[0])).endAngle(angleScale(d.range[1]))())
+    .on("click", (_, d)=>{ state.phase=d.key; state.selectedYear=Math.round((d.range[0]+d.range[1])/2); renderPhaseChips(); updateChart(true); });
+  // Phase names are kept in the chips above to avoid clutter around the halo.
+}
+
+function valueNorm(d){
+  if(state.metric==="meanCount") return d.normMean;
+  return d.normShare;
+}
+function arcFor(d, norm){
+  const start = angleScale(d.relYear-.48);
+  const end = angleScale(d.relYear+.48);
+  const base = d.field==="All" ? 8 : 5;
+  const shaped = Math.pow(Math.max(0, norm - 0.04) / 0.96, 1.28);
+  const cap = d.maxWidth * (d.field==="All" ? 1.52 : 1.38);
+  const width = base + Math.min(cap, shaped * d.maxWidth * state.stretch);
+  return d3.arc().innerRadius(d.inner).outerRadius(d.inner+width).startAngle(start).endAngle(end).padAngle(0.006).padRadius(d.inner)();
+}
+function segmentClass(d){
+  const r=activePhase().range;
+  return `halo-segment ${d.field==="All"?"total-ring":""} ${!fieldVisible(d.field)?"dimmed":""} ${!inRange(d.relYear,r)?"out-range":""} ${d.relYear===state.selectedYear?"active-year":""}`;
+}
+function segmentOpacity(d){
+  if(!fieldVisible(d.field)) return 0.08;
+  if(!inRange(d.relYear, activePhase().range)) return 0.13;
+  const base = d.field==="All" ? .58 : .64;
+  const lift = d.field==="All" ? .34 : .30;
+  return Math.min(.96, base + valueNorm(d)*lift);
+}
+function updateSegmentStates(){
+  if(!svg) return;
+  svg.selectAll(".halo-segment")
+    .attr("class", d=>segmentClass(d))
+    .transition().duration(180)
+    .attr("opacity", d=>segmentOpacity(d));
+}
+function updateCenter(){
+  const g=svg.select("g");
+  g.select(".center-title").text(relLabel(state.selectedYear).replace(" ", ""));
+  const d = currentData.find(x=>x.field===(state.focus==="All"?"All":state.focus) && x.relYear===state.selectedYear);
+  if(d){
+    const val = state.metric==="meanCount" ? `${d3.format(".2f")(d.meanCount)} 篇/人` : `${d3.format(".1%")(d.activeShare)} 活跃`;
+    g.select(".center-sub").text(val);
+  }
+}
+
+function updatePeakPins(){
+  if(!svg || !dims) return;
+  const radiusMax=dims.radiusMax;
+  const ringLayout = {
+    Chemistry:{inner:radiusMax*0.34, maxWidth:radiusMax*0.105},
+    Medicine:{inner:radiusMax*0.49, maxWidth:radiusMax*0.105},
+    Physics:{inner:radiusMax*0.64, maxWidth:radiusMax*0.105},
+    All:{inner:radiusMax*0.79, maxWidth:radiusMax*0.135}
+  };
+  const peaks = ringFields().map(f=>{
+    const rows = currentData.filter(d=>d.field===f);
+    const d = rows.reduce((a,b)=> !a || b[state.metric]>a[state.metric] ? b : a, null);
+    return d ? {...d, ...ringLayout[f]} : null;
+  }).filter(Boolean);
+  const pins=svg.select("g").select(".peak-pins").selectAll(".peak-pin").data(peaks,d=>d.field);
+  pins.transition().duration(420).ease(d3.easeCubicOut)
+    .attr("opacity", d=>fieldVisible(d.field)?1:.18)
+    .attr("transform", d=>{
+      const a=angleScale(d.relYear);
+      const rr=d.inner + 8 + Math.min(d.maxWidth*(d.field==="All"?1.52:1.38), Math.pow(Math.max(0,valueNorm(d)-0.04)/0.96,1.28)*d.maxWidth*state.stretch) + 8;
+      return `translate(${Math.sin(a)*rr},${-Math.cos(a)*rr})`;
+    });
+}
+
+function updateChart(animated=false){
+  updateCenter();
+  updateSegmentStates();
+  updateRulerStates();
+  svg.selectAll(".halo-segment").transition().duration(animated?520:0).ease(d3.easeCubicOut)
+    .attr("d", d=>arcFor(d, valueNorm(d)))
+    .attr("opacity", d=>segmentOpacity(d));
+  svg.selectAll(".phase-arc").classed("active", d=>state.phase===d.key);
+  updatePeakPins();
+  updateSummary();
+  renderLegend();
+  renderPhaseChips();
+}
+
+function drawRuler(){
+  const wrap=document.getElementById("mini-ruler-wrap");
+  const width=Math.max(760, wrap.clientWidth || 1000), height=76;
+  d3.select(wrap).selectAll("*").remove();
+  rulerSvg=d3.select(wrap).append("svg").attr("width",width).attr("height",height).attr("viewBox",`0 0 ${width} ${height}`);
+  const margin={left:54,right:24,top:10,bottom:26};
+  const x=d3.scaleBand().domain(d3.range(-40,26)).range([margin.left,width-margin.right]).paddingInner(.08);
+  const y=d3.scaleLinear().domain([0,1]).range([height-margin.bottom,margin.top]);
+  rulerSvg.append("rect").attr("class","ruler-bg").attr("x",margin.left-8).attr("y",margin.top-4).attr("width",width-margin.left-margin.right+16).attr("height",height-margin.top-margin.bottom+8);
+  const data=currentData.filter(d=>d.field==="All");
+  rulerSvg.selectAll(".ruler-cell").data(data,d=>d.relYear).join("rect")
+    .attr("class",d=>rulerClass(d))
+    .attr("x",d=>x(d.relYear)).attr("width",x.bandwidth())
+    .attr("y",d=>y(valueNorm(d))).attr("height",d=>y(0)-y(valueNorm(d)))
+    .attr("rx",3)
+    .attr("fill",colors.All)
+    .attr("opacity",d=>0.22+valueNorm(d)*0.58)
+    .on("mousemove",function(event,d){ state.selectedYear=d.relYear; updateCenter(); updateSegmentStates(); updateRulerStates(); showTooltip(event,d); })
+    .on("mouseleave",hideTooltip)
+    .on("click",(_,d)=>{ state.selectedYear=d.relYear; setCustomPhase(d.relYear,d.relYear); updateChart(true); });
+  const axis=d3.axisBottom(d3.scaleLinear().domain([-40,25]).range([margin.left,width-margin.right])).tickValues([-40,-30,-20,-10,0,10,20,25]).tickFormat(d=>d===0?"获奖年":(d<0?d:`+${d}`));
+  rulerSvg.append("g").attr("class","ruler-axis").attr("transform",`translate(0,${height-margin.bottom+4})`).call(axis);
+}
+function rulerClass(d){
+  return `ruler-cell ${!inRange(d.relYear, activePhase().range)?"dimmed":""} ${d.relYear===state.selectedYear?"active":""}`;
+}
+function updateRulerStates(){ if(rulerSvg) rulerSvg.selectAll(".ruler-cell").attr("class",d=>rulerClass(d)); }
+
+function updateSummary(){
+  const r=activePhase().range;
+  const f = state.focus;
+  const fields = f==="All" ? FIELD_ORDER : [f];
+  const rows = currentData.filter(d=>fields.includes(d.field) && inRange(d.relYear,r));
+  const mainRows = currentData.filter(d=>d.field===(f==="All"?"All":f) && inRange(d.relYear,r));
+  const peak = mainRows.reduce((a,b)=> !a || b[state.metric]>a[state.metric] ? b : a, null);
+  const papers = d3.sum(rows.filter(d=>d.field!=="All" || f==="All"), d=>d.field==="All" ? 0 : d.totalCount);
+  const allPapers = f==="All" ? d3.sum(currentData.filter(d=>d.field!=="All" && inRange(d.relYear,r)), d=>d.totalCount) : d3.sum(rows,d=>d.totalCount);
+  const atPrize = currentData.find(d=>d.field===(f==="All"?"All":f) && d.relYear===0);
+  d3.select("#sumWindow").text(rangeLabel(r).replace("获奖前 ","-").replace("获奖后 ","+").replace(/ 年/g,""));
+  animateText("#sumPapers", allPapers, fmtK);
+  d3.select("#sumPeak").text(peak ? (peak.relYear<0 ? `${peak.relYear}` : `+${peak.relYear}`) : "–");
+  animateText("#sumActive", atPrize ? atPrize.activeShare*100 : 0, v=>d3.format(".1f")(v)+"%");
+  d3.select("#heroAuthors").text(lifeSummary.find(d=>d.field==="All").laureates);
+  d3.select("#heroPapers").text(fmtK(lifeSummary.find(d=>d.field==="All").papersInWindow));
+  const pp=lifeSummary.find(d=>d.field==="All").prePeakRelYear;
+  d3.select("#heroPeak").text(`${pp}yr`);
+}
+function animateText(sel, target, formatter){
+  const node=d3.select(sel);
+  const old=+node.attr("data-val") || 0;
+  node.attr("data-val", target);
+  node.transition().duration(520).tween("text", function(){
+    const i=d3.interpolateNumber(old,target);
+    return t=>{ this.textContent=formatter(i(t)); };
+  });
+}
+function showTooltip(event, d){
+  const rows = currentData.filter(x=>x.relYear===d.relYear && (state.focus==="All" || x.field===state.focus || x.field==="All"));
+  // 根据当前指标，子行只显示对应维度，互不混用
+  const lines = state.metric==="meanCount"
+    ? rows.map(x=>`<div><b style="color:${colors[x.field]}">${FIELD_LABEL[x.field]}</b> · ${d3.format(".2f")(x.meanCount)} 篇/人</div>`).join("")
+    : rows.map(x=>`<div><b style="color:${colors[x.field]}">${FIELD_LABEL[x.field]}</b> · ${d3.format(".1%")(x.activeShare)} 活跃</div>`).join("");
+  d3.select("#ttLabel").html(relLabel(d.relYear));
+  d3.select("#ttVal").html(state.metric==="meanCount" ? `${d3.format(".2f")(d.meanCount)} 篇/人` : d3.format(".1%")(d.activeShare));
+  d3.select("#ttSub").html(lines);
+  tooltip.style("opacity",1).style("left",(event.clientX+16)+"px").style("top",(event.clientY+16)+"px");
+}
+function hideTooltip(){ tooltip.style("opacity",0); }
+function attachKeyboard(node){
+  d3.select(node).on("keydown", event=>{
+    if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"," ","Escape"].includes(event.key)) event.preventDefault();
+    if(event.key==="ArrowLeft") state.selectedYear=Math.max(-40,state.selectedYear-1);
+    if(event.key==="ArrowRight") state.selectedYear=Math.min(25,state.selectedYear+1);
+    if(event.key==="ArrowUp" || event.key==="ArrowDown"){
+      const idx=FIELD_ORDER.indexOf(state.focus);
+      state.focus=FIELD_ORDER[(idx+(event.key==="ArrowDown"?1:-1)+FIELD_ORDER.length)%FIELD_ORDER.length];
+    }
+    if(event.key===" "){
+      state.metric = state.metric==="meanCount" ? "activeShare" : "meanCount";
+      d3.selectAll("#metricGroup .btn").classed("active", function(){ return this.dataset.metric===state.metric; });
+    }
+    if(event.key==="Escape"){ state.focus="All"; state.phase="all"; state.selectedYear=-4; state.metric="meanCount"; state.stretch=1.6; d3.selectAll("#metricGroup .btn").classed("active", function(){return this.dataset.metric===state.metric;}); d3.select("#stretchRange").property("value",state.stretch); d3.select("#stretchVal").text("1.6×"); }
+    if(event.key==="ArrowLeft" || event.key==="ArrowRight"){ setCustomPhase(state.selectedYear,state.selectedYear); }
+    updateChart(true);
+  });
+}
+
+/* =================================================================
+   数据加载：用 d3.csv() 并行读取三个学科的发文记录 CSV
+   -----------------------------------------------------------------
+   计算逻辑（字段结构与原始可视化完全一致）：
+     relYear     = Pub year - Prize year
+     meanCount   = 总论文数 / 该学科总得主数
+     activeShare = 当年有发表的得主数 / 总得主数
+     normMean    = meanCount  / 该学科峰值（供弧长归一化）
+     normShare   = activeShare / 该学科峰值
+   覆盖 Chemistry / Medicine / Physics / All，窗口 [-40, +25]
+================================================================= */
+
+let lifeRecords = [];   // (学科, relYear) 统计记录，由回调填入
+let lifeSummary = [];   // 各学科汇总，由回调填入
+
+const LAUREATE_COUNTS = { Chemistry: 163, Medicine: 189, Physics: 193, All: 545 };
+const WINDOW_RANGE    = [-40, 25];
+window._lc_init = function(chem, med, phys) {
+  var allRows=[];
+  [['Chemistry',chem],['Medicine',med],['Physics',phys]].forEach(function(pair){
+    var field=pair[0], rows=pair[1];
+    rows.forEach(function(d){
+      var pz=+d['Prize year'],pb=+d['Pub year'],lid=+d['Laureate ID'];
+      if(isNaN(pz)||isNaN(pb)||isNaN(lid)) return;
+      var ry=pb-pz;
+      if(ry<WINDOW_RANGE[0]||ry>WINDOW_RANGE[1]) return;
+      allRows.push({field:field,laureateId:lid,relYear:ry});
+    });
+  });
+  var fields=['Chemistry','Medicine','Physics','All'],byField={};
+  fields.forEach(function(field){
+    var frows=field==='All'?allRows:allRows.filter(function(r){return r.field===field;});
+    var tL=LAUREATE_COUNTS[field],recs=[];
+    for(var ry=WINDOW_RANGE[0];ry<=WINDOW_RANGE[1];ry++){
+      var yr=frows.filter(function(r){return r.relYear===ry;});
+      var byL={};
+      yr.forEach(function(r){byL[r.laureateId]=(byL[r.laureateId]||0)+1;});
+      var aa=Object.keys(byL).length,tc=yr.length;
+      var mc=Math.round(tc/tL*1e4)/1e4,as_=Math.round(aa/tL*1e4)/1e4;
+      var ca=Object.values(byL).concat(new Array(tL-aa).fill(0)).sort(function(a,b){return a-b;});
+      var mid=Math.floor(ca.length/2);
+      var med=ca.length%2===0?(ca[mid-1]+ca[mid])/2:ca[mid];
+      recs.push({field:field,relYear:ry,meanCount:mc,activeShare:as_,totalCount:tc,activeAuthors:aa,medianCount:med,normMean:0,normShare:0});
+    }
+    byField[field]=recs;
+  });
+  fields.forEach(function(field){
+    var recs=byField[field];
+    var mx=Math.max.apply(null,recs.map(function(r){return r.meanCount;}))||1;
+    var ms=Math.max.apply(null,recs.map(function(r){return r.activeShare;}))||1;
+    recs.forEach(function(r){r.normMean=Math.round(r.meanCount/mx*1e4)/1e4;r.normShare=Math.round(r.activeShare/ms*1e4)/1e4;});
+    lifeRecords=lifeRecords.concat(recs);
+  });
+  function am(arr){return arr.length?Math.round(arr.reduce(function(s,r){return s+r.meanCount;},0)/arr.length*100)/100:0;}
+  lifeSummary=fields.map(function(field){
+    var recs=byField[field];
+    var pk=recs.reduce(function(a,b){return b.meanCount>a.meanCount?b:a;});
+    var pr=recs.filter(function(r){return r.relYear<=0;});
+    var pp=pr.reduce(function(a,b){return b.meanCount>a.meanCount?b:a;},pr[0]);
+    var p10=recs.filter(function(r){return r.relYear>=1&&r.relYear<=10;});
+    var m10=recs.filter(function(r){return r.relYear>=-10&&r.relYear<=-1;});
+    var a0=recs.find(function(r){return r.relYear===0;});
+    return {field:field,laureates:LAUREATE_COUNTS[field],
+      papersInWindow:recs.reduce(function(s,r){return s+r.totalCount;},0),
+      peakRelYear:pk.relYear,peakMean:Math.round(pk.meanCount*100)/100,
+      prePeakRelYear:pp.relYear,prePeakMean:Math.round(pp.meanCount*100)/100,
+      avgLeadPeak:Math.abs(pp.relYear),post10Mean:am(p10),pre10Mean:am(m10),
+      activeAtPrize:a0?Math.round(a0.activeShare*1000)/10:0};
+  });
+  window._shared_life = lifeRecords;
+  init();
+  _drawn.cyc = (_drawn.cyc || 0) + 1;
+  window._redraw_lc = function(){ draw(); };
+};
+})();
+</script>
+
+<!-- 模块：综合分析 -->
+<script>
+(function() {
+/* 学科颜色与强调色统一从共享 CSS 的 token 读取，改配色只需动 CSS 一处 */
+const css = getComputedStyle(document.documentElement);
+const tok = (name, fb) => { const x = css.getPropertyValue(name).trim(); return x || fb; };
+const COLOR  = { Chemistry:tok('--c1','#2563EB'), Medicine:tok('--c2','#0891B2'), Physics:tok('--c3','#7C3AED') };
+const INK     = tok('--text','#1E293B');
+const BORDER2 = tok('--border2','#CBD5E1');
+const SURFACE = tok('--surface','#ffffff');
+const ACCENT    = tok('--accent','#4d4d4d');        /* 全体中位数强调色；在 CSS 定义 --accent 即可覆盖 */
+const ACCENT_DK = tok('--accent-dark','#9F1239');   /* 同上，--accent-dark 覆盖文字色 */
+
+const STATE = { fields:["Chemistry","Medicine","Physics"], active:new Set(), q4:null, showMedian:true };
+const MIN_N = 3;
+let DATA = null;
+function buildLegend(){
+  const box = d3.select("#legend");
+  STATE.fields.forEach(f => {
+    const item = box.append("div").attr("class","legend-item active").attr("data-f",f)
+      .on("click", () => {
+        if (STATE.active.has(f)) { if (STATE.active.size>1) STATE.active.delete(f); }
+        else STATE.active.add(f);
+        box.selectAll(".legend-item").each(function(){
+          const ff = this.getAttribute("data-f");
+          d3.select(this).classed("active",STATE.active.has(ff)).classed("muted",!STATE.active.has(ff));
+        });
+        renderQ5();
+      });
+    item.append("span").attr("class","legend-dot").style("background",COLOR[f]);
+    item.append("span").text(f);
+  });
+}
+
+function buildQ4Tabs(){
+  const box = d3.select("#q4tabs");
+  STATE.fields.filter(f => DATA.q4.points[f]).forEach(f => {
+    box.append("button").attr("class","tab"+(f===STATE.q4?" active":"")).text(f)
+      .on("click", function(){
+        STATE.q4 = f;
+        box.selectAll(".tab").classed("active",false);
+        d3.select(this).classed("active",true);
+        renderQ4();
+      });
+  });
+}
+
+function renderAll(){
+  if (!isModuleVisible('paper')) return;
+  renderQ4(); renderQ5();
+}
+
+/* Q5 全体中位数开关（用共享 CSS 的 .legend-item，active/muted 自动套样式）*/
+function buildQ5Toggle(){
+  const box=d3.select("#q5toggle");
+  const item=box.append("div").attr("class","legend-item active")
+    .on("click",()=>{
+      STATE.showMedian=!STATE.showMedian;
+      item.classed("active",STATE.showMedian).classed("muted",!STATE.showMedian);
+      renderQ5();
+    });
+  item.append("span").attr("class","legend-dot").style("background",ACCENT);
+  item.append("span").text("全体中位数（all-field median）");
+}
+
+const W=1040, H=400;
+function svgIn(sel){
+  const box = d3.select(sel+" .plot"); box.selectAll("*").remove();
+  return box.append("svg").attr("viewBox",`0 0 ${W} ${H}`);
+}
+function gridY(svg,y,m){
+  svg.append("g").attr("class","grid").selectAll("line").data(y.ticks(5)).join("line")
+    .attr("x1",m.l).attr("x2",W-m.r).attr("y1",d=>y(d)).attr("y2",d=>y(d));
+}
+/* 一元最小二乘：返回斜率、截距、R²、斜率标准误、95%CI 半宽、样本量 */
+function linreg(pts){
+  const n=pts.length; if(n<2) return null;
+  let sx=0,sy=0; for(const p of pts){sx+=p.x;sy+=p.y;}
+  const mx=sx/n, my=sy/n;
+  let sxx=0,sxy=0,syy=0;
+  for(const p of pts){const dx=p.x-mx, dy=p.y-my; sxx+=dx*dx; sxy+=dx*dy; syy+=dy*dy;}
+  if(sxx<=0) return null;
+  const slope=sxy/sxx, intercept=my-slope*mx;
+  let sse=0; for(const p of pts){const e=p.y-(slope*p.x+intercept); sse+=e*e;}
+  const r2 = syy>0 ? 1-sse/syy : 0;
+  const seSlope = n>2 ? Math.sqrt((sse/(n-2))/sxx) : NaN;
+  return {slope, intercept, r2, seSlope, ci:1.96*seSlope, n};
+}
+
+/* ---------- 图 1：人均年发文数折线 ---------- */
+function renderQ1(){
+  const m={t:24,r:28,b:52,l:58};
+  const svg=svgIn("#q1");
+  const x=d3.scaleLinear().domain([-15,15]).range([m.l,W-m.r]);
+  let maxY=0;
+  STATE.fields.forEach(f=>{ if(STATE.active.has(f)&&DATA.q1[f])
+    DATA.q1[f].forEach(d=>{ if(d.perCapita!=null) maxY=Math.max(maxY,d.perCapita); }); });
+  if(maxY===0) maxY=1;
+  const y=d3.scaleLinear().domain([0,maxY]).nice().range([H-m.b,m.t]);
+  gridY(svg,y,m);
+
+  svg.append("line").attr("x1",x(0)).attr("x2",x(0)).attr("y1",m.t).attr("y2",H-m.b)
+     .attr("stroke",BORDER2).attr("stroke-dasharray","3 3");
+  svg.append("text").attr("class","lbl").attr("x",x(0)+5).attr("y",m.t+11).text("prize year");
+
+  svg.append("g").attr("transform",`translate(0,${H-m.b})`)
+     .call(d3.axisBottom(x).tickValues([-15,-10,-5,0,5,10,15]).tickFormat(d=>d>0?"+"+d:d));
+  svg.append("g").attr("transform",`translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5));
+  svg.append("text").attr("class","axis-label").attr("x",(m.l+W-m.r)/2).attr("y",H-8)
+     .attr("text-anchor","middle").text("years relative to the prize (t)");
+  svg.append("text").attr("class","axis-label").attr("x",m.l-6).attr("y",m.t-8).text("pubs / laureate");
+
+  const line=d3.line().defined(d=>d.perCapita!=null)
+    .x(d=>x(d.t)).y(d=>y(d.perCapita)).curve(d3.curveMonotoneX);
+  STATE.fields.forEach(f=>{
+    if(!STATE.active.has(f)||!DATA.q1[f]) return;
+    const pts=DATA.q1[f].filter(d=>d.perCapita!=null);
+    svg.append("path").datum(pts).attr("fill","none")
+       .attr("stroke",COLOR[f]).attr("stroke-width",2.2).attr("d",line);
+    const pk=pts.reduce((a,b)=>b.perCapita>a.perCapita?b:a,pts[0]);
+    svg.append("circle").attr("cx",x(pk.t)).attr("cy",y(pk.perCapita)).attr("r",4.5).attr("fill",COLOR[f]);
+    svg.append("text").attr("class","annot").attr("fill",COLOR[f])
+       .attr("x",x(pk.t)).attr("y",y(pk.perCapita)-9).attr("text-anchor","middle")
+       .text((pk.t>0?"+":"")+pk.t);
+  });
+}
+
+/* ---------- 图 3：首发到获奖间隔直方图 + 四分位带 + 中位数 ---------- */
+function renderQ4(){
+  const f=STATE.q4;
+  const vals=(DATA.q4.points[f]||[]).map(d=>d.interval).sort(d3.ascending);
+  const m={t:24,r:28,b:52,l:58};
+  const svg=svgIn("#q4");
+  if(!vals.length){ svg.append("text").attr("class","lbl").attr("x",W/2).attr("y",H/2)
+      .attr("text-anchor","middle").text("no data"); return; }
+  const maxV=d3.max(vals);
+  const x=d3.scaleLinear().domain([0,Math.ceil((maxV+1)/5)*5]).range([m.l,W-m.r]);
+  const bins=d3.bin().domain(x.domain()).thresholds(d3.range(0,x.domain()[1]+5,5))(vals);
+  const y=d3.scaleLinear().domain([0,d3.max(bins,b=>b.length)]).nice().range([H-m.b,m.t]);
+
+  const q1v=d3.quantile(vals,.25), q3v=d3.quantile(vals,.75), med=d3.median(vals);
+  const all=STATE.fields.flatMap(ff=>(DATA.q4.points[ff]||[]).map(d=>d.interval)).sort(d3.ascending);
+  const allMed=d3.median(all);
+  const top=m.t, bot=H-m.b;
+
+  gridY(svg,y,m);
+
+  // 四分位带（IQR，本学科）
+  svg.append("rect").attr("x",x(q1v)).attr("y",top)
+     .attr("width",Math.max(0, x(q3v) - x(q1v))).attr("height",Math.max(0, bot - top))
+     .attr("fill",COLOR[f]).attr("opacity",.12);
+  svg.append("text").attr("class","lbl").attr("fill",COLOR[f])
+     .attr("x",(x(q1v)+x(q3v))/2).attr("y",bot-8).attr("text-anchor","middle")
+     .text(`IQR ${q1v.toFixed(0)}–${q3v.toFixed(0)} yr`);
+
+  svg.append("g").selectAll("rect").data(bins).join("rect")
+     .attr("x",d=>x(d.x0)+1.5).attr("width",d=>Math.max(0,x(d.x1)-x(d.x0)-3))
+     .attr("y",d=>y(d.length)).attr("height",d=>y(0)-y(d.length))
+     .attr("fill",COLOR[f]).attr("opacity",.82).attr("rx",2.5);
+
+  // 本学科中位数（深色虚线）
+  svg.append("line").attr("x1",x(med)).attr("x2",x(med)).attr("y1",top).attr("y2",bot)
+     .attr("stroke",INK).attr("stroke-width",1.6).attr("stroke-dasharray","4 3");
+  svg.append("text").attr("class","annot").attr("fill",INK)
+     .attr("x",x(med)+6).attr("y",top+13).text(`median ${med.toFixed(0)} yr`);
+
+  // 全体中位数（玫红实线，参考）
+  svg.append("line").attr("x1",x(allMed)).attr("x2",x(allMed)).attr("y1",top).attr("y2",bot)
+     .attr("stroke",ACCENT).attr("stroke-width",1.8);
+  svg.append("text").attr("class","annot").attr("fill",ACCENT)
+     .attr("x",x(allMed)+6).attr("y",top+30).text(`all-field ${allMed.toFixed(0)} yr`);
+
+  svg.append("g").attr("transform",`translate(0,${bot})`).call(d3.axisBottom(x).ticks(10));
+  svg.append("g").attr("transform",`translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5));
+  svg.append("text").attr("class","axis-label").attr("x",(m.l+W-m.r)/2).attr("y",H-8)
+     .attr("text-anchor","middle").text("years from first paper to prize");
+  svg.append("text").attr("class","axis-label").attr("x",m.l-6).attr("y",m.t-8).text("laureates");
+}
+
+/* ---------- 图 4：按年代看中位数（全体主线 + 四分位带 + 各学科细线）---------- */
+function renderQ5(){
+  const m={t:28,r:34,b:52,l:58};
+  const svg=svgIn("#q5");
+
+  const series={};
+  STATE.fields.forEach(f=>{
+    const pts=DATA.q4.points[f]; if(!pts) return;
+    series[f]=[...d3.rollup(pts,
+        v=>({med:d3.median(v,d=>d.interval), n:v.length}),
+        d=>Math.floor(d.prizeYear/10)*10).entries()]
+      .filter(([,o])=>o.n>=MIN_N)
+      .map(([dec,o])=>({decade:dec, median:o.med, n:o.n}))
+      .sort((a,b)=>a.decade-b.decade);
+  });
+
+  const overall=[...d3.rollup(
+      STATE.fields.flatMap(f=>DATA.q4.points[f]||[]),
+      v=>{ const a=v.map(d=>d.interval).sort(d3.ascending);
+           return {med:d3.median(a), q1:d3.quantile(a,.25), q3:d3.quantile(a,.75), n:a.length}; },
+      d=>Math.floor(d.prizeYear/10)*10).entries()]
+    .filter(([,o])=>o.n>=MIN_N)
+    .map(([dec,o])=>({decade:dec, ...o}))
+    .sort((a,b)=>a.decade-b.decade);
+
+  if(!overall.length){ svg.append("text").attr("class","lbl").attr("x",W/2).attr("y",H/2)
+      .attr("text-anchor","middle").text("no data"); return; }
+
+  const decs=overall.map(d=>d.decade);
+  const maxY=d3.max([...overall.map(d=>d.q3), ...Object.values(series).flat().map(d=>d.median)]);
+  const x=d3.scaleLinear().domain([decs[0]-3, decs[decs.length-1]+3]).range([m.l,W-m.r]);
+  const y=d3.scaleLinear().domain([0,maxY*1.12]).nice().range([H-m.b,m.t]);
+  gridY(svg,y,m);
+
+  // 四分位带（全体）
+  const area=d3.area().x(d=>x(d.decade)).y0(d=>y(d.q1)).y1(d=>y(d.q3)).curve(d3.curveMonotoneX);
+  svg.append("path").datum(overall).attr("fill",INK).attr("opacity",.07).attr("d",area);
+
+  // 各学科细线
+  const line=d3.line().x(d=>x(d.decade)).y(d=>y(d.median)).curve(d3.curveMonotoneX);
+  STATE.fields.forEach(f=>{
+    if(!STATE.active.has(f)||!series[f]||!series[f].length) return;
+    svg.append("path").datum(series[f]).attr("fill","none")
+       .attr("stroke",COLOR[f]).attr("stroke-width",1.6).attr("opacity",.9).attr("d",line);
+    svg.append("g").selectAll("circle").data(series[f]).join("circle")
+       .attr("cx",d=>x(d.decade)).attr("cy",d=>y(d.median)).attr("r",2.6)
+       .attr("fill",COLOR[f]).attr("opacity",.9);
+  });
+
+  // 全体中位数主线（玫红加粗）——由卡片上方开关控制显隐
+  if(STATE.showMedian){
+    const oline=d3.line().x(d=>x(d.decade)).y(d=>y(d.med)).curve(d3.curveMonotoneX);
+    svg.append("path").datum(overall).attr("fill","none")
+       .attr("stroke",ACCENT).attr("stroke-width",3).attr("d",oline);
+    svg.append("g").selectAll("circle").data(overall).join("circle")
+       .attr("cx",d=>x(d.decade)).attr("cy",d=>y(d.med)).attr("r",4)
+       .attr("fill",ACCENT).attr("stroke",SURFACE).attr("stroke-width",1);
+
+    const first=overall[0], last=overall[overall.length-1];
+    svg.append("text").attr("class","annot").attr("fill",ACCENT_DK)
+       .attr("x",x(first.decade)+8).attr("y",y(first.med)-10).attr("text-anchor","start")
+       .text(`${first.decade}s · ${first.med.toFixed(0)}y`);
+    svg.append("text").attr("class","annot").attr("fill",ACCENT_DK)
+       .attr("x",x(last.decade)-2).attr("y",y(last.med)-12).attr("text-anchor","end")
+       .text(`${last.decade}s · ${last.med.toFixed(0)}y`);
+  }
+
+  // 图内图例（仅四分位带；全体中位数由上方开关控制）
+  const lg=svg.append("g").attr("transform",`translate(${m.l+6},${m.t})`);
+  lg.append("rect").attr("x",0).attr("y",0).attr("width",20).attr("height",9).attr("fill",INK).attr("opacity",.12);
+  lg.append("text").attr("class","lbl").attr("x",26).attr("y",8).text("IQR (all fields)");
+
+  const step=decs.length>9?20:10;
+  const ticks=decs.filter(d=>d%step===0);
+  svg.append("g").attr("transform",`translate(0,${H-m.b})`)
+     .call(d3.axisBottom(x).tickValues(ticks.length?ticks:decs).tickFormat(d3.format("d")));
+  svg.append("g").attr("transform",`translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5));
+  svg.append("text").attr("class","axis-label").attr("x",(m.l+W-m.r)/2).attr("y",H-8)
+     .attr("text-anchor","middle").text("prize decade");
+  svg.append("text").attr("class","axis-label").attr("x",m.l-6).attr("y",m.t-8).text("median gap (years)");
+}
+
+function computeIdxData(gapData, lifeRecords) {
+  var fields = ['Chemistry','Medicine','Physics'];
+  var q1 = {};
+  fields.forEach(function(f) {
+    q1[f] = [];
+    for (var t = -15; t <= 15; t++) {
+      var rec = lifeRecords.find(function(r){ return r.field===f && r.relYear===t; });
+      q1[f].push({ t: t, perCapita: rec ? rec.meanCount : null });
+    }
+  });
+  var byLaureate = {};
+  gapData.forEach(function(row) {
+    var key = row.field+'|'+row.laureate;
+    if (!byLaureate[key] || row.gap < byLaureate[key].gap)
+      byLaureate[key] = { field:row.field, prizeYear:row.prize_year, gap:row.gap };
+  });
+  var q4points = {};
+  fields.forEach(function(f) {
+    q4points[f] = Object.values(byLaureate)
+      .filter(function(r){ return r.field===f && r.gap<=75; })
+      .map(function(r){ return { interval:r.gap, prizeYear:r.prizeYear }; });
+  });
+  return { q1:q1, q4:{ points:q4points }, meta:{ fields:fields } };
+}
+function idx_init(gd, lr) {
+  if (!gd || !gd.length) return;
+  DATA = computeIdxData(gd, lr);
+  STATE.fields = DATA.meta.fields;
+  STATE.fields.forEach(function(f){ STATE.active.add(f); });
+  STATE.q4 = STATE.fields.find(function(f){ return DATA.q4.points[f]; }) || STATE.fields[0];
+  STATE.showMedian = true;
+  buildLegend(); buildQ4Tabs(); buildQ5Toggle(); renderAll();
+}
+
+window._idx_init = function(gd, lr) {
+  idx_init(gd, lr);
+  _drawn.paper = true;
+  window._redraw_idx = function(){ renderAll(); };
+};
+})();
+</script>
+
+<!-- 模块：年份趋势 -->
+<script>
+(function() {
+
+/* ── DATA ─────────────────────────────────────────────────── */
+const CYCLE_ALL = [{"rel_year":-20,"Physics":1.321,"Chemistry":5.012,"Medicine":1.894},{"rel_year":-19,"Physics":1.539,"Chemistry":4.718,"Medicine":2.169},{"rel_year":-18,"Physics":1.746,"Chemistry":4.871,"Medicine":2.259},{"rel_year":-17,"Physics":2.088,"Chemistry":5.184,"Medicine":2.27},{"rel_year":-16,"Physics":2.275,"Chemistry":5.135,"Medicine":2.529},{"rel_year":-15,"Physics":2.466,"Chemistry":5.607,"Medicine":2.63},{"rel_year":-14,"Physics":2.378,"Chemistry":5.196,"Medicine":2.656},{"rel_year":-13,"Physics":2.016,"Chemistry":5.828,"Medicine":2.762},{"rel_year":-12,"Physics":2.373,"Chemistry":5.822,"Medicine":3.037},{"rel_year":-11,"Physics":2.14,"Chemistry":5.736,"Medicine":3.307},{"rel_year":-10,"Physics":2.513,"Chemistry":5.626,"Medicine":3.513},{"rel_year":-9,"Physics":2.539,"Chemistry":5.89,"Medicine":3.64},{"rel_year":-8,"Physics":2.777,"Chemistry":5.822,"Medicine":3.947},{"rel_year":-7,"Physics":2.736,"Chemistry":5.877,"Medicine":4.339},{"rel_year":-6,"Physics":2.917,"Chemistry":6.534,"Medicine":4.571},{"rel_year":-5,"Physics":3.047,"Chemistry":6.301,"Medicine":4.762},{"rel_year":-4,"Physics":3.036,"Chemistry":6.791,"Medicine":4.667},{"rel_year":-3,"Physics":3.01,"Chemistry":6.65,"Medicine":4.418},{"rel_year":-2,"Physics":2.829,"Chemistry":5.975,"Medicine":4.074},{"rel_year":-1,"Physics":2.922,"Chemistry":5.503,"Medicine":4.228},{"rel_year":0,"Physics":3.057,"Chemistry":6.423,"Medicine":3.825},{"rel_year":1,"Physics":4.104,"Chemistry":7.043,"Medicine":4.54},{"rel_year":2,"Physics":2.819,"Chemistry":5.423,"Medicine":3.339},{"rel_year":3,"Physics":2.503,"Chemistry":5.509,"Medicine":3.106},{"rel_year":4,"Physics":2.368,"Chemistry":5.429,"Medicine":3.677},{"rel_year":5,"Physics":2.301,"Chemistry":5.19,"Medicine":3.148},{"rel_year":6,"Physics":1.933,"Chemistry":4.479,"Medicine":2.751},{"rel_year":7,"Physics":1.891,"Chemistry":4.429,"Medicine":3.042},{"rel_year":8,"Physics":1.793,"Chemistry":5.374,"Medicine":3.111},{"rel_year":9,"Physics":1.71,"Chemistry":4.822,"Medicine":2.984},{"rel_year":10,"Physics":1.632,"Chemistry":4.037,"Medicine":2.624},{"rel_year":11,"Physics":1.472,"Chemistry":3.81,"Medicine":2.286},{"rel_year":12,"Physics":1.596,"Chemistry":3.35,"Medicine":2.37},{"rel_year":13,"Physics":1.368,"Chemistry":2.963,"Medicine":2.09},{"rel_year":14,"Physics":1.301,"Chemistry":3.018,"Medicine":1.931},{"rel_year":15,"Physics":1.067,"Chemistry":2.736,"Medicine":1.73}];
+
+const DECADE_CYCLES = {"1900":[{"rel_year":-20,"Physics":0.5,"Chemistry":0.0,"Medicine":0},{"rel_year":-19,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":-18,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":-17,"Physics":0.75,"Chemistry":0.0,"Medicine":0},{"rel_year":-16,"Physics":1.25,"Chemistry":0.0,"Medicine":0},{"rel_year":-15,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":-14,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":-13,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":-12,"Physics":0.75,"Chemistry":0.0,"Medicine":0},{"rel_year":-11,"Physics":1.0,"Chemistry":0.0,"Medicine":0},{"rel_year":-10,"Physics":0.5,"Chemistry":0.0,"Medicine":0},{"rel_year":-9,"Physics":1.25,"Chemistry":0.0,"Medicine":0},{"rel_year":-8,"Physics":0.25,"Chemistry":0.0,"Medicine":0},{"rel_year":-7,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":-6,"Physics":0.25,"Chemistry":2.0,"Medicine":0},{"rel_year":-5,"Physics":0.75,"Chemistry":0.0,"Medicine":0},{"rel_year":-4,"Physics":0.25,"Chemistry":0.0,"Medicine":0},{"rel_year":-3,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":-2,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":-1,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":0,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":1,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":2,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":3,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":4,"Physics":0.5,"Chemistry":0.0,"Medicine":0},{"rel_year":5,"Physics":0.0,"Chemistry":0.0,"Medicine":0},{"rel_year":6,"Physics":0.5,"Chemistry":0.0,"Medicine":0},{"rel_year":7,"Physics":0.5,"Chemistry":0.0,"Medicine":0},{"rel_year":8,"Physics":0.5,"Chemistry":0.0,"Medicine":0},{"rel_year":9,"Physics":0.25,"Chemistry":0.0,"Medicine":0},{"rel_year":10,"Physics":0.75,"Chemistry":0.0,"Medicine":0},{"rel_year":11,"Physics":0.5,"Chemistry":0.0,"Medicine":0},{"rel_year":12,"Physics":0.75,"Chemistry":0.0,"Medicine":0},{"rel_year":13,"Physics":1.25,"Chemistry":0.0,"Medicine":0},{"rel_year":14,"Physics":0.25,"Chemistry":0.0,"Medicine":0},{"rel_year":15,"Physics":0.0,"Chemistry":0.0,"Medicine":0}],"1910":[{"rel_year":-20,"Physics":0.0,"Chemistry":0.25,"Medicine":0.0},{"rel_year":-19,"Physics":0.0,"Chemistry":0.75,"Medicine":0.0},{"rel_year":-18,"Physics":0.0,"Chemistry":0.25,"Medicine":0.0},{"rel_year":-17,"Physics":0.25,"Chemistry":0.5,"Medicine":0.0},{"rel_year":-16,"Physics":0.125,"Chemistry":1.5,"Medicine":0.0},{"rel_year":-15,"Physics":0.125,"Chemistry":1.0,"Medicine":0.0},{"rel_year":-14,"Physics":0.0,"Chemistry":1.25,"Medicine":0.0},{"rel_year":-13,"Physics":0.0,"Chemistry":0.5,"Medicine":0.0},{"rel_year":-12,"Physics":0.125,"Chemistry":2.0,"Medicine":0.0},{"rel_year":-11,"Physics":0.125,"Chemistry":1.5,"Medicine":1.5},{"rel_year":-10,"Physics":0.125,"Chemistry":1.75,"Medicine":0.0},{"rel_year":-9,"Physics":0.625,"Chemistry":0.75,"Medicine":0.0},{"rel_year":-8,"Physics":0.125,"Chemistry":0.5,"Medicine":0.0},{"rel_year":-7,"Physics":0.25,"Chemistry":2.75,"Medicine":1.0},{"rel_year":-6,"Physics":0.125,"Chemistry":1.75,"Medicine":3.0},{"rel_year":-5,"Physics":0.625,"Chemistry":2.0,"Medicine":1.0},{"rel_year":-4,"Physics":0.0,"Chemistry":3.5,"Medicine":1.0},{"rel_year":-3,"Physics":0.125,"Chemistry":1.25,"Medicine":0.0},{"rel_year":-2,"Physics":0.625,"Chemistry":1.25,"Medicine":5.5},{"rel_year":-1,"Physics":0.375,"Chemistry":0.5,"Medicine":4.5},{"rel_year":0,"Physics":0.0,"Chemistry":2.5,"Medicine":4.0},{"rel_year":1,"Physics":0.0,"Chemistry":3.5,"Medicine":1.5},{"rel_year":2,"Physics":0.0,"Chemistry":2.25,"Medicine":2.0},{"rel_year":3,"Physics":0.0,"Chemistry":1.75,"Medicine":0.0},{"rel_year":4,"Physics":0.0,"Chemistry":1.5,"Medicine":0.5},{"rel_year":5,"Physics":0.0,"Chemistry":1.5,"Medicine":1.0},{"rel_year":6,"Physics":0.0,"Chemistry":1.5,"Medicine":0.0},{"rel_year":7,"Physics":0.0,"Chemistry":1.25,"Medicine":0.0},{"rel_year":8,"Physics":0.0,"Chemistry":1.5,"Medicine":0.0},{"rel_year":9,"Physics":0.375,"Chemistry":2.0,"Medicine":3.0},{"rel_year":10,"Physics":0.375,"Chemistry":1.75,"Medicine":2.0},{"rel_year":11,"Physics":0.625,"Chemistry":1.0,"Medicine":4.0},{"rel_year":12,"Physics":0.0,"Chemistry":0.75,"Medicine":0.5},{"rel_year":13,"Physics":0.0,"Chemistry":0.0,"Medicine":2.0},{"rel_year":14,"Physics":0.0,"Chemistry":1.25,"Medicine":3.5},{"rel_year":15,"Physics":0.0,"Chemistry":2.25,"Medicine":0.5}],"1920":[{"rel_year":-20,"Physics":0.083,"Chemistry":0.0,"Medicine":0.0},{"rel_year":-19,"Physics":0.083,"Chemistry":0.5,"Medicine":0.25},{"rel_year":-18,"Physics":0.167,"Chemistry":0.4,"Medicine":0.25},{"rel_year":-17,"Physics":0.25,"Chemistry":0.6,"Medicine":0.125},{"rel_year":-16,"Physics":0.5,"Chemistry":0.3,"Medicine":0.125},{"rel_year":-15,"Physics":0.583,"Chemistry":0.1,"Medicine":0.25},{"rel_year":-14,"Physics":0.667,"Chemistry":0.1,"Medicine":0.125},{"rel_year":-13,"Physics":0.5,"Chemistry":0.1,"Medicine":0.0},{"rel_year":-12,"Physics":0.833,"Chemistry":0.7,"Medicine":0.375},{"rel_year":-11,"Physics":0.5,"Chemistry":0.3,"Medicine":0.5},{"rel_year":-10,"Physics":0.917,"Chemistry":0.3,"Medicine":0.375},{"rel_year":-9,"Physics":1.417,"Chemistry":0.2,"Medicine":0.625},{"rel_year":-8,"Physics":0.917,"Chemistry":0.3,"Medicine":0.125},{"rel_year":-7,"Physics":1.083,"Chemistry":0.1,"Medicine":0.25},{"rel_year":-6,"Physics":1.167,"Chemistry":0.1,"Medicine":0.0},{"rel_year":-5,"Physics":0.5,"Chemistry":0.3,"Medicine":0.0},{"rel_year":-4,"Physics":0.75,"Chemistry":0.3,"Medicine":0.0},{"rel_year":-3,"Physics":1.083,"Chemistry":0.7,"Medicine":0.25},{"rel_year":-2,"Physics":1.5,"Chemistry":1.0,"Medicine":0.25},{"rel_year":-1,"Physics":0.5,"Chemistry":0.9,"Medicine":1.875},{"rel_year":0,"Physics":0.917,"Chemistry":0.6,"Medicine":1.25},{"rel_year":1,"Physics":1.417,"Chemistry":0.2,"Medicine":0.5},{"rel_year":2,"Physics":1.75,"Chemistry":0.7,"Medicine":1.125},{"rel_year":3,"Physics":1.167,"Chemistry":0.3,"Medicine":0.5},{"rel_year":4,"Physics":0.833,"Chemistry":0.1,"Medicine":0.875},{"rel_year":5,"Physics":1.333,"Chemistry":0.0,"Medicine":0.5},{"rel_year":6,"Physics":1.0,"Chemistry":0.2,"Medicine":1.125},{"rel_year":7,"Physics":1.0,"Chemistry":0.2,"Medicine":0.625},{"rel_year":8,"Physics":0.917,"Chemistry":0.2,"Medicine":0.75},{"rel_year":9,"Physics":0.583,"Chemistry":0.2,"Medicine":1.125},{"rel_year":10,"Physics":0.833,"Chemistry":0.3,"Medicine":0.25},{"rel_year":11,"Physics":0.5,"Chemistry":0.2,"Medicine":0.75},{"rel_year":12,"Physics":0.583,"Chemistry":0.3,"Medicine":1.125},{"rel_year":13,"Physics":0.5,"Chemistry":0.0,"Medicine":0.75},{"rel_year":14,"Physics":0.417,"Chemistry":0.1,"Medicine":0.75},{"rel_year":15,"Physics":0.833,"Chemistry":0.0,"Medicine":0.25}],"1930":[{"rel_year":-20,"Physics":0.727,"Chemistry":0.538,"Medicine":0.417},{"rel_year":-19,"Physics":0.273,"Chemistry":0.846,"Medicine":0.417},{"rel_year":-18,"Physics":0.091,"Chemistry":1.923,"Medicine":1.167},{"rel_year":-17,"Physics":0.182,"Chemistry":2.308,"Medicine":1.167},{"rel_year":-16,"Physics":0.273,"Chemistry":1.769,"Medicine":0.667},{"rel_year":-15,"Physics":0.545,"Chemistry":2.077,"Medicine":0.667},{"rel_year":-14,"Physics":0.182,"Chemistry":1.769,"Medicine":1.25},{"rel_year":-13,"Physics":1.0,"Chemistry":1.154,"Medicine":0.667},{"rel_year":-12,"Physics":0.818,"Chemistry":1.462,"Medicine":1.167},{"rel_year":-11,"Physics":0.273,"Chemistry":2.0,"Medicine":0.75},{"rel_year":-10,"Physics":1.273,"Chemistry":3.923,"Medicine":0.917},{"rel_year":-9,"Physics":1.182,"Chemistry":2.692,"Medicine":0.583},{"rel_year":-8,"Physics":1.636,"Chemistry":2.615,"Medicine":1.083},{"rel_year":-7,"Physics":2.0,"Chemistry":3.077,"Medicine":1.0},{"rel_year":-6,"Physics":1.364,"Chemistry":4.769,"Medicine":1.5},{"rel_year":-5,"Physics":0.909,"Chemistry":4.231,"Medicine":0.75},{"rel_year":-4,"Physics":1.727,"Chemistry":5.231,"Medicine":1.333},{"rel_year":-3,"Physics":1.091,"Chemistry":5.615,"Medicine":0.917},{"rel_year":-2,"Physics":1.091,"Chemistry":4.615,"Medicine":1.333},{"rel_year":-1,"Physics":0.273,"Chemistry":3.769,"Medicine":2.083},{"rel_year":0,"Physics":0.636,"Chemistry":4.692,"Medicine":1.333},{"rel_year":1,"Physics":0.909,"Chemistry":3.308,"Medicine":1.25},{"rel_year":2,"Physics":1.0,"Chemistry":3.538,"Medicine":0.917},{"rel_year":3,"Physics":0.818,"Chemistry":2.692,"Medicine":0.583},{"rel_year":4,"Physics":0.182,"Chemistry":2.308,"Medicine":0.75},{"rel_year":5,"Physics":0.455,"Chemistry":3.231,"Medicine":1.083},{"rel_year":6,"Physics":0.273,"Chemistry":2.769,"Medicine":1.0},{"rel_year":7,"Physics":0.182,"Chemistry":2.538,"Medicine":0.75},{"rel_year":8,"Physics":0.273,"Chemistry":2.692,"Medicine":0.833},{"rel_year":9,"Physics":1.0,"Chemistry":2.923,"Medicine":1.0},{"rel_year":10,"Physics":0.091,"Chemistry":3.077,"Medicine":0.583},{"rel_year":11,"Physics":0.909,"Chemistry":4.077,"Medicine":1.25},{"rel_year":12,"Physics":0.364,"Chemistry":3.0,"Medicine":0.833},{"rel_year":13,"Physics":0.273,"Chemistry":3.846,"Medicine":0.75},{"rel_year":14,"Physics":0.909,"Chemistry":3.077,"Medicine":0.5},{"rel_year":15,"Physics":0.909,"Chemistry":3.0,"Medicine":0.833}],"1940":[{"rel_year":-20,"Physics":0.714,"Chemistry":1.778,"Medicine":0.786},{"rel_year":-19,"Physics":0.429,"Chemistry":1.333,"Medicine":0.5},{"rel_year":-18,"Physics":1.286,"Chemistry":0.778,"Medicine":1.786},{"rel_year":-17,"Physics":1.286,"Chemistry":0.889,"Medicine":1.571},{"rel_year":-16,"Physics":0.429,"Chemistry":1.333,"Medicine":1.071},{"rel_year":-15,"Physics":0.857,"Chemistry":0.778,"Medicine":0.571},{"rel_year":-14,"Physics":1.143,"Chemistry":1.667,"Medicine":0.786},{"rel_year":-13,"Physics":0.429,"Chemistry":1.778,"Medicine":0.786},{"rel_year":-12,"Physics":0.429,"Chemistry":2.111,"Medicine":1.214},{"rel_year":-11,"Physics":1.714,"Chemistry":1.889,"Medicine":1.857},{"rel_year":-10,"Physics":1.571,"Chemistry":2.111,"Medicine":1.5},{"rel_year":-9,"Physics":1.0,"Chemistry":2.333,"Medicine":0.929},{"rel_year":-8,"Physics":0.571,"Chemistry":2.667,"Medicine":0.929},{"rel_year":-7,"Physics":0.286,"Chemistry":1.889,"Medicine":1.143},{"rel_year":-6,"Physics":1.286,"Chemistry":1.111,"Medicine":1.071},{"rel_year":-5,"Physics":1.286,"Chemistry":1.889,"Medicine":1.857},{"rel_year":-4,"Physics":0.429,"Chemistry":1.667,"Medicine":1.929},{"rel_year":-3,"Physics":0.143,"Chemistry":0.556,"Medicine":0.786},{"rel_year":-2,"Physics":0.143,"Chemistry":1.556,"Medicine":0.357},{"rel_year":-1,"Physics":0.429,"Chemistry":1.222,"Medicine":0.857},{"rel_year":0,"Physics":1.143,"Chemistry":0.778,"Medicine":0.429},{"rel_year":1,"Physics":1.143,"Chemistry":1.0,"Medicine":0.571},{"rel_year":2,"Physics":0.286,"Chemistry":1.556,"Medicine":1.143},{"rel_year":3,"Physics":0.429,"Chemistry":2.333,"Medicine":0.429},{"rel_year":4,"Physics":0.714,"Chemistry":1.556,"Medicine":0.571},{"rel_year":5,"Physics":0.429,"Chemistry":1.667,"Medicine":0.714},{"rel_year":6,"Physics":1.143,"Chemistry":2.0,"Medicine":1.214},{"rel_year":7,"Physics":0.714,"Chemistry":1.889,"Medicine":1.357},{"rel_year":8,"Physics":0.429,"Chemistry":9.111,"Medicine":1.143},{"rel_year":9,"Physics":0.0,"Chemistry":4.556,"Medicine":0.643},{"rel_year":10,"Physics":0.429,"Chemistry":5.889,"Medicine":0.786},{"rel_year":11,"Physics":0.0,"Chemistry":1.667,"Medicine":0.357},{"rel_year":12,"Physics":0.286,"Chemistry":2.111,"Medicine":0.786},{"rel_year":13,"Physics":0.571,"Chemistry":2.222,"Medicine":0.857},{"rel_year":14,"Physics":0.286,"Chemistry":2.222,"Medicine":1.0},{"rel_year":15,"Physics":0.143,"Chemistry":2.222,"Medicine":1.0}],"1950":[{"rel_year":-20,"Physics":0.65,"Chemistry":0.786,"Medicine":1.316},{"rel_year":-19,"Physics":0.75,"Chemistry":2.143,"Medicine":1.105},{"rel_year":-18,"Physics":0.5,"Chemistry":1.786,"Medicine":0.684},{"rel_year":-17,"Physics":0.55,"Chemistry":2.0,"Medicine":0.684},{"rel_year":-16,"Physics":0.7,"Chemistry":2.714,"Medicine":1.263},{"rel_year":-15,"Physics":0.6,"Chemistry":1.286,"Medicine":1.316},{"rel_year":-14,"Physics":0.55,"Chemistry":1.214,"Medicine":1.474},{"rel_year":-13,"Physics":0.2,"Chemistry":1.429,"Medicine":1.789},{"rel_year":-12,"Physics":0.6,"Chemistry":3.071,"Medicine":1.684},{"rel_year":-11,"Physics":0.25,"Chemistry":1.429,"Medicine":0.842},{"rel_year":-10,"Physics":0.7,"Chemistry":1.286,"Medicine":1.158},{"rel_year":-9,"Physics":0.7,"Chemistry":0.714,"Medicine":1.789},{"rel_year":-8,"Physics":1.05,"Chemistry":0.714,"Medicine":2.158},{"rel_year":-7,"Physics":1.2,"Chemistry":0.786,"Medicine":1.632},{"rel_year":-6,"Physics":1.5,"Chemistry":0.786,"Medicine":1.632},{"rel_year":-5,"Physics":2.35,"Chemistry":1.857,"Medicine":2.211},{"rel_year":-4,"Physics":1.45,"Chemistry":1.643,"Medicine":2.263},{"rel_year":-3,"Physics":1.8,"Chemistry":2.786,"Medicine":2.368},{"rel_year":-2,"Physics":1.4,"Chemistry":1.929,"Medicine":1.789},{"rel_year":-1,"Physics":1.4,"Chemistry":2.714,"Medicine":2.526},{"rel_year":0,"Physics":1.45,"Chemistry":1.429,"Medicine":2.474},{"rel_year":1,"Physics":2.25,"Chemistry":1.429,"Medicine":2.421},{"rel_year":2,"Physics":1.55,"Chemistry":1.143,"Medicine":1.789},{"rel_year":3,"Physics":0.95,"Chemistry":1.143,"Medicine":2.421},{"rel_year":4,"Physics":1.15,"Chemistry":1.786,"Medicine":2.737},{"rel_year":5,"Physics":1.0,"Chemistry":0.929,"Medicine":2.526},{"rel_year":6,"Physics":0.9,"Chemistry":1.0,"Medicine":1.737},{"rel_year":7,"Physics":0.9,"Chemistry":1.286,"Medicine":2.263},{"rel_year":8,"Physics":0.8,"Chemistry":1.071,"Medicine":3.053},{"rel_year":9,"Physics":1.25,"Chemistry":0.857,"Medicine":2.632},{"rel_year":10,"Physics":0.7,"Chemistry":0.643,"Medicine":2.263},{"rel_year":11,"Physics":1.0,"Chemistry":1.357,"Medicine":1.684},{"rel_year":12,"Physics":0.75,"Chemistry":0.714,"Medicine":2.526},{"rel_year":13,"Physics":0.4,"Chemistry":0.214,"Medicine":1.684},{"rel_year":14,"Physics":0.75,"Chemistry":0.286,"Medicine":2.263},{"rel_year":15,"Physics":0.5,"Chemistry":0.786,"Medicine":1.632}],"1960":[{"rel_year":-20,"Physics":0.294,"Chemistry":2.067,"Medicine":0.84},{"rel_year":-19,"Physics":0.118,"Chemistry":2.2,"Medicine":0.96},{"rel_year":-18,"Physics":0.294,"Chemistry":1.2,"Medicine":0.88},{"rel_year":-17,"Physics":1.706,"Chemistry":1.667,"Medicine":1.0},{"rel_year":-16,"Physics":1.588,"Chemistry":1.933,"Medicine":1.36},{"rel_year":-15,"Physics":1.529,"Chemistry":3.067,"Medicine":1.28},{"rel_year":-14,"Physics":1.765,"Chemistry":2.333,"Medicine":1.76},{"rel_year":-13,"Physics":1.529,"Chemistry":3.467,"Medicine":1.08},{"rel_year":-12,"Physics":1.882,"Chemistry":2.733,"Medicine":1.28},{"rel_year":-11,"Physics":2.059,"Chemistry":3.8,"Medicine":2.28},{"rel_year":-10,"Physics":1.176,"Chemistry":2.067,"Medicine":1.88},{"rel_year":-9,"Physics":1.471,"Chemistry":3.667,"Medicine":2.16},{"rel_year":-8,"Physics":1.588,"Chemistry":3.467,"Medicine":2.04},{"rel_year":-7,"Physics":1.588,"Chemistry":3.933,"Medicine":2.4},{"rel_year":-6,"Physics":1.176,"Chemistry":3.733,"Medicine":2.44},{"rel_year":-5,"Physics":1.941,"Chemistry":3.333,"Medicine":1.64},{"rel_year":-4,"Physics":1.176,"Chemistry":5.667,"Medicine":2.64},{"rel_year":-3,"Physics":1.765,"Chemistry":4.6,"Medicine":2.6},{"rel_year":-2,"Physics":1.176,"Chemistry":3.8,"Medicine":2.32},{"rel_year":-1,"Physics":1.294,"Chemistry":3.333,"Medicine":2.32},{"rel_year":0,"Physics":1.0,"Chemistry":3.267,"Medicine":1.84},{"rel_year":1,"Physics":2.765,"Chemistry":5.067,"Medicine":2.68},{"rel_year":2,"Physics":1.529,"Chemistry":4.667,"Medicine":1.36},{"rel_year":3,"Physics":1.0,"Chemistry":4.667,"Medicine":1.48},{"rel_year":4,"Physics":1.824,"Chemistry":6.333,"Medicine":1.4},{"rel_year":5,"Physics":1.059,"Chemistry":3.867,"Medicine":1.64},{"rel_year":6,"Physics":1.0,"Chemistry":5.0,"Medicine":1.56},{"rel_year":7,"Physics":1.235,"Chemistry":3.6,"Medicine":1.44},{"rel_year":8,"Physics":1.353,"Chemistry":5.267,"Medicine":1.52},{"rel_year":9,"Physics":1.588,"Chemistry":2.667,"Medicine":1.4},{"rel_year":10,"Physics":1.588,"Chemistry":4.067,"Medicine":1.28},{"rel_year":11,"Physics":1.824,"Chemistry":4.867,"Medicine":1.48},{"rel_year":12,"Physics":2.882,"Chemistry":4.333,"Medicine":1.48},{"rel_year":13,"Physics":2.353,"Chemistry":3.6,"Medicine":1.12},{"rel_year":14,"Physics":2.353,"Chemistry":3.733,"Medicine":1.0},{"rel_year":15,"Physics":2.294,"Chemistry":3.6,"Medicine":0.96}],"1970":[{"rel_year":-20,"Physics":1.04,"Chemistry":4.933,"Medicine":1.333},{"rel_year":-19,"Physics":1.08,"Chemistry":4.867,"Medicine":0.875},{"rel_year":-18,"Physics":1.52,"Chemistry":5.733,"Medicine":1.708},{"rel_year":-17,"Physics":1.04,"Chemistry":6.333,"Medicine":1.333},{"rel_year":-16,"Physics":0.84,"Chemistry":4.067,"Medicine":1.917},{"rel_year":-15,"Physics":2.0,"Chemistry":6.533,"Medicine":1.75},{"rel_year":-14,"Physics":1.12,"Chemistry":4.8,"Medicine":1.708},{"rel_year":-13,"Physics":1.48,"Chemistry":6.4,"Medicine":2.792},{"rel_year":-12,"Physics":1.36,"Chemistry":7.533,"Medicine":2.542},{"rel_year":-11,"Physics":1.24,"Chemistry":6.333,"Medicine":3.042},{"rel_year":-10,"Physics":1.64,"Chemistry":6.667,"Medicine":3.75},{"rel_year":-9,"Physics":1.8,"Chemistry":7.933,"Medicine":3.625},{"rel_year":-8,"Physics":2.28,"Chemistry":8.867,"Medicine":3.417},{"rel_year":-7,"Physics":2.84,"Chemistry":8.667,"Medicine":4.833},{"rel_year":-6,"Physics":2.84,"Chemistry":9.467,"Medicine":4.958},{"rel_year":-5,"Physics":3.04,"Chemistry":8.067,"Medicine":6.417},{"rel_year":-4,"Physics":2.32,"Chemistry":8.533,"Medicine":6.25},{"rel_year":-3,"Physics":2.2,"Chemistry":9.533,"Medicine":6.0},{"rel_year":-2,"Physics":2.68,"Chemistry":10.667,"Medicine":5.333},{"rel_year":-1,"Physics":2.96,"Chemistry":7.067,"Medicine":6.0},{"rel_year":0,"Physics":2.52,"Chemistry":8.733,"Medicine":5.125},{"rel_year":1,"Physics":4.28,"Chemistry":9.533,"Medicine":6.792},{"rel_year":2,"Physics":1.6,"Chemistry":8.6,"Medicine":4.625},{"rel_year":3,"Physics":2.28,"Chemistry":10.467,"Medicine":4.375},{"rel_year":4,"Physics":2.56,"Chemistry":10.733,"Medicine":6.417},{"rel_year":5,"Physics":1.84,"Chemistry":8.067,"Medicine":5.458},{"rel_year":6,"Physics":2.2,"Chemistry":7.4,"Medicine":4.417},{"rel_year":7,"Physics":2.16,"Chemistry":8.467,"Medicine":5.0},{"rel_year":8,"Physics":2.48,"Chemistry":6.933,"Medicine":5.25},{"rel_year":9,"Physics":2.0,"Chemistry":8.733,"Medicine":5.208},{"rel_year":10,"Physics":2.36,"Chemistry":5.733,"Medicine":4.5},{"rel_year":11,"Physics":2.24,"Chemistry":4.733,"Medicine":5.0},{"rel_year":12,"Physics":2.2,"Chemistry":4.133,"Medicine":4.875},{"rel_year":13,"Physics":2.16,"Chemistry":3.8,"Medicine":4.375},{"rel_year":14,"Physics":2.32,"Chemistry":3.533,"Medicine":3.958},{"rel_year":15,"Physics":1.8,"Chemistry":3.2,"Medicine":4.75}],"1980":[{"rel_year":-20,"Physics":1.545,"Chemistry":3.0,"Medicine":1.087},{"rel_year":-19,"Physics":1.455,"Chemistry":3.619,"Medicine":1.609},{"rel_year":-18,"Physics":1.545,"Chemistry":3.762,"Medicine":1.826},{"rel_year":-17,"Physics":2.091,"Chemistry":4.143,"Medicine":2.391},{"rel_year":-16,"Physics":1.682,"Chemistry":5.524,"Medicine":2.435},{"rel_year":-15,"Physics":2.591,"Chemistry":5.286,"Medicine":2.826},{"rel_year":-14,"Physics":2.227,"Chemistry":5.0,"Medicine":2.826},{"rel_year":-13,"Physics":1.955,"Chemistry":6.381,"Medicine":2.913},{"rel_year":-12,"Physics":2.0,"Chemistry":6.095,"Medicine":3.391},{"rel_year":-11,"Physics":2.909,"Chemistry":4.286,"Medicine":3.304},{"rel_year":-10,"Physics":3.227,"Chemistry":5.143,"Medicine":4.043},{"rel_year":-9,"Physics":3.227,"Chemistry":6.143,"Medicine":4.0},{"rel_year":-8,"Physics":2.545,"Chemistry":5.952,"Medicine":5.522},{"rel_year":-7,"Physics":2.5,"Chemistry":5.238,"Medicine":4.478},{"rel_year":-6,"Physics":2.091,"Chemistry":5.81,"Medicine":6.957},{"rel_year":-5,"Physics":2.364,"Chemistry":5.905,"Medicine":4.609},{"rel_year":-4,"Physics":2.682,"Chemistry":6.429,"Medicine":6.0},{"rel_year":-3,"Physics":2.818,"Chemistry":7.571,"Medicine":5.043},{"rel_year":-2,"Physics":2.227,"Chemistry":7.524,"Medicine":5.478},{"rel_year":-1,"Physics":2.636,"Chemistry":6.81,"Medicine":4.043},{"rel_year":0,"Physics":5.318,"Chemistry":7.238,"Medicine":4.348},{"rel_year":1,"Physics":5.636,"Chemistry":10.095,"Medicine":5.87},{"rel_year":2,"Physics":2.136,"Chemistry":6.476,"Medicine":4.0},{"rel_year":3,"Physics":3.136,"Chemistry":7.0,"Medicine":3.217},{"rel_year":4,"Physics":3.091,"Chemistry":8.381,"Medicine":3.217},{"rel_year":5,"Physics":3.409,"Chemistry":8.952,"Medicine":4.043},{"rel_year":6,"Physics":3.182,"Chemistry":7.0,"Medicine":3.696},{"rel_year":7,"Physics":3.045,"Chemistry":7.0,"Medicine":4.217},{"rel_year":8,"Physics":2.818,"Chemistry":8.476,"Medicine":4.652},{"rel_year":9,"Physics":2.591,"Chemistry":7.81,"Medicine":4.217},{"rel_year":10,"Physics":1.955,"Chemistry":7.476,"Medicine":4.391},{"rel_year":11,"Physics":1.227,"Chemistry":7.524,"Medicine":3.478},{"rel_year":12,"Physics":1.318,"Chemistry":8.429,"Medicine":3.478},{"rel_year":13,"Physics":1.136,"Chemistry":6.81,"Medicine":3.739},{"rel_year":14,"Physics":1.364,"Chemistry":7.524,"Medicine":2.609},{"rel_year":15,"Physics":1.273,"Chemistry":6.905,"Medicine":2.043}],"1990":[{"rel_year":-20,"Physics":2.5,"Chemistry":11.611,"Medicine":2.55},{"rel_year":-19,"Physics":1.955,"Chemistry":7.944,"Medicine":3.85},{"rel_year":-18,"Physics":3.409,"Chemistry":10.556,"Medicine":4.1},{"rel_year":-17,"Physics":2.773,"Chemistry":10.778,"Medicine":4.5},{"rel_year":-16,"Physics":2.864,"Chemistry":9.611,"Medicine":4.0},{"rel_year":-15,"Physics":3.409,"Chemistry":12.611,"Medicine":4.25},{"rel_year":-14,"Physics":3.455,"Chemistry":10.111,"Medicine":3.5},{"rel_year":-13,"Physics":2.818,"Chemistry":9.389,"Medicine":4.25},{"rel_year":-12,"Physics":2.773,"Chemistry":9.056,"Medicine":3.9},{"rel_year":-11,"Physics":2.682,"Chemistry":8.611,"Medicine":5.05},{"rel_year":-10,"Physics":3.273,"Chemistry":11.389,"Medicine":6.3},{"rel_year":-9,"Physics":3.455,"Chemistry":9.556,"Medicine":6.0},{"rel_year":-8,"Physics":3.727,"Chemistry":9.667,"Medicine":7.2},{"rel_year":-7,"Physics":2.955,"Chemistry":8.556,"Medicine":7.8},{"rel_year":-6,"Physics":3.955,"Chemistry":9.5,"Medicine":8.15},{"rel_year":-5,"Physics":3.318,"Chemistry":10.833,"Medicine":6.9},{"rel_year":-4,"Physics":3.545,"Chemistry":10.278,"Medicine":7.2},{"rel_year":-3,"Physics":3.364,"Chemistry":8.722,"Medicine":8.0},{"rel_year":-2,"Physics":3.0,"Chemistry":7.389,"Medicine":6.9},{"rel_year":-1,"Physics":2.955,"Chemistry":7.389,"Medicine":7.0},{"rel_year":0,"Physics":3.273,"Chemistry":8.0,"Medicine":5.55},{"rel_year":1,"Physics":3.955,"Chemistry":10.778,"Medicine":7.8},{"rel_year":2,"Physics":4.227,"Chemistry":8.667,"Medicine":5.9},{"rel_year":3,"Physics":4.091,"Chemistry":9.222,"Medicine":5.6},{"rel_year":4,"Physics":3.409,"Chemistry":8.111,"Medicine":6.75},{"rel_year":5,"Physics":4.182,"Chemistry":8.389,"Medicine":6.05},{"rel_year":6,"Physics":3.091,"Chemistry":7.0,"Medicine":4.1},{"rel_year":7,"Physics":4.0,"Chemistry":8.333,"Medicine":5.7},{"rel_year":8,"Physics":4.727,"Chemistry":8.222,"Medicine":5.8},{"rel_year":9,"Physics":5.091,"Chemistry":7.722,"Medicine":5.6},{"rel_year":10,"Physics":5.182,"Chemistry":6.444,"Medicine":5.2},{"rel_year":11,"Physics":4.909,"Chemistry":6.5,"Medicine":4.0},{"rel_year":12,"Physics":5.545,"Chemistry":4.5,"Medicine":4.3},{"rel_year":13,"Physics":4.5,"Chemistry":5.0,"Medicine":4.2},{"rel_year":14,"Physics":3.864,"Chemistry":5.722,"Medicine":3.9},{"rel_year":15,"Physics":2.727,"Chemistry":5.167,"Medicine":2.6}],"2000":[{"rel_year":-20,"Physics":2.179,"Chemistry":7.32,"Medicine":3.577},{"rel_year":-19,"Physics":2.571,"Chemistry":7.6,"Medicine":3.962},{"rel_year":-18,"Physics":2.286,"Chemistry":6.72,"Medicine":3.577},{"rel_year":-17,"Physics":2.286,"Chemistry":8.0,"Medicine":3.808},{"rel_year":-16,"Physics":3.0,"Chemistry":7.4,"Medicine":4.077},{"rel_year":-15,"Physics":2.786,"Chemistry":8.44,"Medicine":4.308},{"rel_year":-14,"Physics":3.571,"Chemistry":7.84,"Medicine":5.0},{"rel_year":-13,"Physics":3.429,"Chemistry":10.08,"Medicine":4.654},{"rel_year":-12,"Physics":4.143,"Chemistry":9.16,"Medicine":5.808},{"rel_year":-11,"Physics":3.321,"Chemistry":10.44,"Medicine":5.154},{"rel_year":-10,"Physics":4.286,"Chemistry":7.76,"Medicine":6.308},{"rel_year":-9,"Physics":3.643,"Chemistry":9.6,"Medicine":5.731},{"rel_year":-8,"Physics":4.107,"Chemistry":9.12,"Medicine":5.385},{"rel_year":-7,"Physics":3.179,"Chemistry":9.56,"Medicine":6.346},{"rel_year":-6,"Physics":4.429,"Chemistry":9.64,"Medicine":5.692},{"rel_year":-5,"Physics":4.5,"Chemistry":9.68,"Medicine":6.038},{"rel_year":-4,"Physics":5.821,"Chemistry":9.64,"Medicine":6.231},{"rel_year":-3,"Physics":4.464,"Chemistry":9.64,"Medicine":5.423},{"rel_year":-2,"Physics":4.929,"Chemistry":7.72,"Medicine":4.577},{"rel_year":-1,"Physics":5.321,"Chemistry":8.28,"Medicine":4.538},{"rel_year":0,"Physics":4.607,"Chemistry":7.4,"Medicine":5.692},{"rel_year":1,"Physics":5.929,"Chemistry":10.6,"Medicine":6.154},{"rel_year":2,"Physics":3.607,"Chemistry":7.56,"Medicine":4.885},{"rel_year":3,"Physics":2.429,"Chemistry":7.36,"Medicine":5.038},{"rel_year":4,"Physics":3.179,"Chemistry":6.28,"Medicine":5.962},{"rel_year":5,"Physics":3.5,"Chemistry":8.68,"Medicine":4.346},{"rel_year":6,"Physics":2.286,"Chemistry":6.96,"Medicine":5.231},{"rel_year":7,"Physics":1.964,"Chemistry":5.84,"Medicine":5.077},{"rel_year":8,"Physics":2.036,"Chemistry":8.96,"Medicine":4.269},{"rel_year":9,"Physics":1.321,"Chemistry":8.44,"Medicine":4.192},{"rel_year":10,"Physics":1.357,"Chemistry":5.04,"Medicine":3.231},{"rel_year":11,"Physics":0.679,"Chemistry":4.36,"Medicine":1.885},{"rel_year":12,"Physics":0.786,"Chemistry":3.48,"Medicine":1.885},{"rel_year":13,"Physics":0.714,"Chemistry":2.64,"Medicine":1.115},{"rel_year":14,"Physics":0.179,"Chemistry":2.08,"Medicine":1.192},{"rel_year":15,"Physics":0.107,"Chemistry":1.08,"Medicine":1.231}],"2010":[{"rel_year":-20,"Physics":2.647,"Chemistry":12.333,"Medicine":5.938},{"rel_year":-19,"Physics":5.824,"Chemistry":10.722,"Medicine":7.062},{"rel_year":-18,"Physics":5.824,"Chemistry":10.611,"Medicine":5.812},{"rel_year":-17,"Physics":8.647,"Chemistry":9.444,"Medicine":4.875},{"rel_year":-16,"Physics":10.294,"Chemistry":10.611,"Medicine":6.75},{"rel_year":-15,"Physics":9.294,"Chemistry":9.111,"Medicine":7.375},{"rel_year":-14,"Physics":8.647,"Chemistry":10.889,"Medicine":6.062},{"rel_year":-13,"Physics":5.941,"Chemistry":10.722,"Medicine":6.375},{"rel_year":-12,"Physics":7.824,"Chemistry":9.944,"Medicine":6.75},{"rel_year":-11,"Physics":5.882,"Chemistry":11.389,"Medicine":7.875},{"rel_year":-10,"Physics":6.353,"Chemistry":10.056,"Medicine":5.438},{"rel_year":-9,"Physics":6.471,"Chemistry":9.667,"Medicine":7.938},{"rel_year":-8,"Physics":8.412,"Chemistry":9.111,"Medicine":8.375},{"rel_year":-7,"Physics":9.294,"Chemistry":10.333,"Medicine":9.812},{"rel_year":-6,"Physics":8.529,"Chemistry":13.333,"Medicine":8.938},{"rel_year":-5,"Physics":8.706,"Chemistry":10.333,"Medicine":14.062},{"rel_year":-4,"Physics":8.647,"Chemistry":11.667,"Medicine":8.375},{"rel_year":-3,"Physics":10.118,"Chemistry":10.333,"Medicine":8.75},{"rel_year":-2,"Physics":8.353,"Chemistry":8.722,"Medicine":8.312},{"rel_year":-1,"Physics":9.0,"Chemistry":8.278,"Medicine":8.562},{"rel_year":0,"Physics":8.059,"Chemistry":15.667,"Medicine":6.75},{"rel_year":1,"Physics":10.647,"Chemistry":9.444,"Medicine":6.312},{"rel_year":2,"Physics":10.118,"Chemistry":6.222,"Medicine":4.688},{"rel_year":3,"Physics":8.059,"Chemistry":5.111,"Medicine":4.062},{"rel_year":4,"Physics":5.176,"Chemistry":4.111,"Medicine":4.062},{"rel_year":5,"Physics":4.176,"Chemistry":1.944,"Medicine":1.188},{"rel_year":6,"Physics":3.294,"Chemistry":1.167,"Medicine":0.062},{"rel_year":7,"Physics":2.412,"Chemistry":1.278,"Medicine":0.0},{"rel_year":8,"Physics":0.176,"Chemistry":0.167,"Medicine":0.0},{"rel_year":9,"Physics":0.0,"Chemistry":0.0,"Medicine":0.0},{"rel_year":10,"Physics":0.0,"Chemistry":0.0,"Medicine":0.0},{"rel_year":11,"Physics":0.0,"Chemistry":0.0,"Medicine":0.0},{"rel_year":12,"Physics":0.0,"Chemistry":0.0,"Medicine":0.0},{"rel_year":13,"Physics":0.0,"Chemistry":0.0,"Medicine":0.0},{"rel_year":14,"Physics":0.0,"Chemistry":0.0,"Medicine":0.0},{"rel_year":15,"Physics":0.0,"Chemistry":0.0,"Medicine":0.0}]};
+
+const STD_DATA = [{"rel_year":-20,"Physics_std":2.398,"Physics_mean":1.321,"Chemistry_std":9.234,"Chemistry_mean":5.012,"Medicine_std":3.674,"Medicine_mean":1.894},{"rel_year":-19,"Physics_std":3.504,"Physics_mean":1.539,"Chemistry_std":7.592,"Chemistry_mean":4.718,"Medicine_std":3.818,"Medicine_mean":2.169},{"rel_year":-18,"Physics_std":3.548,"Physics_mean":1.746,"Chemistry_std":8.377,"Chemistry_mean":4.871,"Medicine_std":3.41,"Medicine_mean":2.259},{"rel_year":-17,"Physics_std":5.067,"Physics_mean":2.088,"Chemistry_std":7.792,"Chemistry_mean":5.184,"Medicine_std":3.111,"Medicine_mean":2.27},{"rel_year":-16,"Physics_std":5.206,"Physics_mean":2.275,"Chemistry_std":7.659,"Chemistry_mean":5.135,"Medicine_std":3.587,"Medicine_mean":2.529},{"rel_year":-15,"Physics_std":5.787,"Physics_mean":2.466,"Chemistry_std":8.753,"Chemistry_mean":5.607,"Medicine_std":4.061,"Medicine_mean":2.63},{"rel_year":-14,"Physics_std":4.943,"Physics_mean":2.378,"Chemistry_std":8.103,"Chemistry_mean":5.196,"Medicine_std":3.547,"Medicine_mean":2.656},{"rel_year":-13,"Physics_std":3.759,"Physics_mean":2.016,"Chemistry_std":8.059,"Chemistry_mean":5.828,"Medicine_std":3.564,"Medicine_mean":2.762},{"rel_year":-12,"Physics_std":4.572,"Physics_mean":2.373,"Chemistry_std":7.892,"Chemistry_mean":5.822,"Medicine_std":4.142,"Medicine_mean":3.037},{"rel_year":-11,"Physics_std":3.662,"Physics_mean":2.14,"Chemistry_std":8.103,"Chemistry_mean":5.736,"Medicine_std":4.62,"Medicine_mean":3.307},{"rel_year":-10,"Physics_std":4.166,"Physics_mean":2.513,"Chemistry_std":7.958,"Chemistry_mean":5.626,"Medicine_std":4.605,"Medicine_mean":3.513},{"rel_year":-9,"Physics_std":3.906,"Physics_mean":2.539,"Chemistry_std":8.33,"Chemistry_mean":5.89,"Medicine_std":4.761,"Medicine_mean":3.64},{"rel_year":-8,"Physics_std":4.823,"Physics_mean":2.777,"Chemistry_std":7.832,"Chemistry_mean":5.822,"Medicine_std":5.516,"Medicine_mean":3.947},{"rel_year":-7,"Physics_std":5.126,"Physics_mean":2.736,"Chemistry_std":8.733,"Chemistry_mean":5.877,"Medicine_std":6.107,"Medicine_mean":4.339},{"rel_year":-6,"Physics_std":5.102,"Physics_mean":2.917,"Chemistry_std":11.161,"Chemistry_mean":6.534,"Medicine_std":6.361,"Medicine_mean":4.571},{"rel_year":-5,"Physics_std":4.666,"Physics_mean":3.047,"Chemistry_std":7.973,"Chemistry_mean":6.301,"Medicine_std":11.089,"Medicine_mean":4.762},{"rel_year":-4,"Physics_std":4.985,"Physics_mean":3.036,"Chemistry_std":9.191,"Chemistry_mean":6.791,"Medicine_std":6.113,"Medicine_mean":4.667},{"rel_year":-3,"Physics_std":5.22,"Physics_mean":3.01,"Chemistry_std":8.817,"Chemistry_mean":6.65,"Medicine_std":6.247,"Medicine_mean":4.418},{"rel_year":-2,"Physics_std":4.706,"Physics_mean":2.829,"Chemistry_std":8.381,"Chemistry_mean":5.975,"Medicine_std":5.723,"Medicine_mean":4.074},{"rel_year":-1,"Physics_std":5.631,"Physics_mean":2.922,"Chemistry_std":6.965,"Chemistry_mean":5.503,"Medicine_std":5.819,"Medicine_mean":4.228},{"rel_year":0,"Physics_std":5.32,"Physics_mean":3.057,"Chemistry_std":10.682,"Chemistry_mean":6.423,"Medicine_std":5.022,"Medicine_mean":3.825},{"rel_year":1,"Physics_std":5.191,"Physics_mean":4.104,"Chemistry_std":7.699,"Chemistry_mean":7.043,"Medicine_std":5.219,"Medicine_mean":4.54},{"rel_year":2,"Physics_std":5.095,"Physics_mean":2.819,"Chemistry_std":7.535,"Chemistry_mean":5.423,"Medicine_std":4.808,"Medicine_mean":3.339},{"rel_year":3,"Physics_std":4.865,"Physics_mean":2.503,"Chemistry_std":8.58,"Chemistry_mean":5.509,"Medicine_std":4.339,"Medicine_mean":3.106},{"rel_year":4,"Physics_std":3.802,"Physics_mean":2.368,"Chemistry_std":8.509,"Chemistry_mean":5.429,"Medicine_std":5.945,"Medicine_mean":3.677},{"rel_year":5,"Physics_std":4.647,"Physics_mean":2.301,"Chemistry_std":8.888,"Chemistry_mean":5.19,"Medicine_std":4.325,"Medicine_mean":3.148},{"rel_year":6,"Physics_std":3.74,"Physics_mean":1.933,"Chemistry_std":7.266,"Chemistry_mean":4.479,"Medicine_std":4.288,"Medicine_mean":2.751},{"rel_year":7,"Physics_std":4.007,"Physics_mean":1.891,"Chemistry_std":7.767,"Chemistry_mean":4.429,"Medicine_std":4.56,"Medicine_mean":3.042},{"rel_year":8,"Physics_std":4.002,"Physics_mean":1.793,"Chemistry_std":10.702,"Chemistry_mean":5.374,"Medicine_std":4.908,"Medicine_mean":3.111},{"rel_year":9,"Physics_std":5.325,"Physics_mean":1.71,"Chemistry_std":10.121,"Chemistry_mean":4.822,"Medicine_std":4.766,"Medicine_mean":2.984},{"rel_year":10,"Physics_std":4.986,"Physics_mean":1.632,"Chemistry_std":7.65,"Chemistry_mean":4.037,"Medicine_std":4.268,"Medicine_mean":2.624},{"rel_year":11,"Physics_std":5.169,"Physics_mean":1.472,"Chemistry_std":6.938,"Chemistry_mean":3.81,"Medicine_std":3.79,"Medicine_mean":2.286},{"rel_year":12,"Physics_std":5.678,"Physics_mean":1.596,"Chemistry_std":6.941,"Chemistry_mean":3.35,"Medicine_std":4.331,"Medicine_mean":2.37},{"rel_year":13,"Physics_std":5.125,"Physics_mean":1.368,"Chemistry_std":6.447,"Chemistry_mean":2.963,"Medicine_std":4.101,"Medicine_mean":2.09},{"rel_year":14,"Physics_std":4.347,"Physics_mean":1.301,"Chemistry_std":6.386,"Chemistry_mean":3.018,"Medicine_std":3.612,"Medicine_mean":1.931},{"rel_year":15,"Physics_std":3.228,"Physics_mean":1.067,"Chemistry_std":5.619,"Chemistry_mean":2.736,"Medicine_std":3.846,"Medicine_mean":1.73}];
+
+const LAG_DATA = [{"decade":1900,"Physics":10.2,"Chemistry":6.0,"Medicine":0},{"decade":1910,"Physics":-3.3,"Chemistry":7.1,"Medicine":7.1},{"decade":1920,"Physics":6.1,"Chemistry":8.4,"Medicine":8.1},{"decade":1930,"Physics":7.3,"Chemistry":10.9,"Medicine":8.2},{"decade":1940,"Physics":20.1,"Chemistry":14.3,"Medicine":12.6},{"decade":1950,"Physics":13.9,"Chemistry":13.1,"Medicine":10.2},{"decade":1960,"Physics":14.0,"Chemistry":11.6,"Medicine":13.4},{"decade":1970,"Physics":18.9,"Chemistry":16.4,"Medicine":16.7},{"decade":1980,"Physics":18.9,"Chemistry":14.2,"Medicine":19.4},{"decade":1990,"Physics":22.2,"Chemistry":20.6,"Medicine":20.6},{"decade":2000,"Physics":25.4,"Chemistry":20.3,"Medicine":23.9},{"decade":2010,"Physics":23.3,"Chemistry":31.8,"Medicine":24.5}];
+
+const DECADES = [1900,1910,1920,1930,1940,1950,1960,1970,1980,1990,2000,2010];
+
+/* ── CONFIG ───────────────────────────────────────────────── */
+const FIELDS = ['Physics','Chemistry','Medicine'];
+const cs = getComputedStyle(document.documentElement);
+const COLORS = {
+  Physics:'#7C3AED',
+  Chemistry:'#2563EB',
+  Medicine:'#0891B2',
+};
+
+let activeFields  = new Set(FIELDS);
+let selectedDecade = null;
+
+const tooltip = d3.select('#tooltip');
+
+function yr_showTT(html,e){tooltip.html(html).style('opacity',1);yr_moveTT(e)}
+function yr_moveTT(e){
+  const x=e.clientX,y=e.clientY,tw=190,th=110;
+  tooltip.style('left',(x+14>window.innerWidth-tw?x-tw-10:x+14)+'px')
+         .style('top',(y+14>window.innerHeight-th?y-th-10:y+14)+'px');
+}
+function yr_hideTT(){tooltip.style('opacity',0)}
+
+/* ── LEGEND ───────────────────────────────────────────────── */
+function yr_makeLegend(id){
+  const c = d3.select('#'+id);
+  c.selectAll('*').remove();
+  FIELDS.forEach(f=>{
+    const item = c.append('div').attr('class','legend-item active').attr('data-field',f);
+    item.append('div').attr('class','legend-dot').style('background',COLORS[f]);
+    item.append('span').text(f);
+    item.on('click',()=>{
+      if(activeFields.has(f)&&activeFields.size===1) return;
+      activeFields.has(f)?activeFields.delete(f):activeFields.add(f);
+      c.selectAll('.legend-item').each(function(){
+        const ff=this.dataset.field;
+        d3.select(this).classed('active',activeFields.has(ff)).classed('muted',!activeFields.has(ff));
+      });
+      yr_redrawCycle();
+    });
+  });
+}
+
+/* ── DECADE CHIPS ─────────────────────────────────────────── */
+function yr_buildChips(){
+  const wrap = d3.select('#yr_decade-chips');
+
+  // «全部» chip
+  wrap.append('span').attr('class','chip-all active').attr('id','chip-all').text('全部')
+    .on('click',()=>{ selectedDecade=null; yr_updateChips(); yr_drawChart1(); document.getElementById('yr_filter-info').textContent='显示：全部年代'; });
+
+  // decade chips
+  DECADES.forEach(dec=>{
+    const hasData = DECADE_CYCLES[String(dec)] !== undefined;
+    wrap.append('span')
+      .attr('class','chip'+(hasData?'':' muted'))
+      .attr('id',`chip-${dec}`)
+      .text(`${dec}s`)
+      .style('opacity', hasData ? 1 : 0.4)
+      .on('click', ()=>{
+        if(!hasData) return;
+        selectedDecade = selectedDecade===dec ? null : dec;
+        yr_updateChips();
+        yr_drawChart1();
+        document.getElementById('yr_filter-info').textContent = selectedDecade ? `显示：${selectedDecade}年代` : '显示：全部年代';
+      });
+  });
+}
+
+function yr_updateChips(){
+  d3.select('#chip-all').classed('active', selectedDecade===null);
+  DECADES.forEach(dec=>{
+    d3.select(`#chip-${dec}`).classed('active', selectedDecade===dec);
+  });
+}
+
+/* ── CHART 1: 发文周期 ────────────────────────────────────── */
+function yr_drawChart1(){
+  d3.select('#yr_chart1-wrap').selectAll('*').remove();
+  const data = selectedDecade ? (DECADE_CYCLES[String(selectedDecade)] || CYCLE_ALL) : CYCLE_ALL;
+  const showBand = !selectedDecade;
+  const stdByYear = Object.fromEntries(STD_DATA.map(d => [d.rel_year, d]));
+  const bandNote = document.getElementById('yr-band-note');
+  if (bandNote) bandNote.style.display = showBand ? '' : 'none';
+
+  const wrap = document.getElementById('yr_chart1-wrap');
+  if (!isModuleVisible('cyc')) return;
+  const dim = chartDims(wrap, 900, 360);
+  if (!dim.ok) return;
+  const W = dim.W, H = dim.H;
+  const m={top:24,right:28,bottom:46,left:56};
+  const w=W-m.left-m.right, h=H-m.top-m.bottom;
+  if (w < 4 || h < 4) return;
+
+  const svg=d3.select('#yr_chart1-wrap').append('svg').attr('width',W).attr('height',H);
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+
+  const x=d3.scaleLinear().domain([-20,15]).range([0,w]);
+  const maxY=d3.max(data,d=>d3.max(FIELDS.filter(f=>activeFields.has(f)).map(f=>d[f]||0)))||1;
+  const y=d3.scaleLinear().domain([0,maxY*1.2]).range([h,0]);
+
+  g.append('g').attr('class','grid').call(d3.axisLeft(y).tickSize(-w).tickFormat(''));
+  g.append('g').attr('transform',`translate(0,${h})`)
+   .call(d3.axisBottom(x).tickFormat(d=>d===0?'获奖年':(d>0?'+':'')+d));
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d.toFixed(1)));
+
+  g.append('text').attr('x',w/2).attr('y',h+40).attr('text-anchor','middle')
+   .style('fill','var(--text3)').style('font-size','12px').text('相对获奖年（年）');
+  g.append('text').attr('transform','rotate(-90)').attr('x',-h/2).attr('y',-48)
+   .attr('text-anchor','middle').style('fill','var(--text3)').style('font-size','12px')
+   .text('平均发文量（篇/得主）');
+
+  // 获奖年竖线（无文字标注，横轴已标示 0 年）
+  g.append('line').attr('class','anno-line')
+   .attr('x1',x(0)).attr('x2',x(0)).attr('y1',0).attr('y2',h);
+
+  FIELDS.forEach(f=>{
+    if(!activeFields.has(f)) return;
+    const color = COLORS[f];
+
+    // 均值 ±0.4σ 带（与折线同一 data，std 来自 STD_DATA）
+    if(showBand){
+      const areaFn = d3.area()
+        .x(d=>x(d.rel_year))
+        .y0(d=>{
+          const std = (stdByYear[d.rel_year] || {})[f+'_std'] || 0;
+          return y(Math.max(0, (d[f]||0) - std*0.4));
+        })
+        .y1(d=>{
+          const std = (stdByYear[d.rel_year] || {})[f+'_std'] || 0;
+          return y((d[f]||0) + std*0.4);
+        })
+        .curve(d3.curveCatmullRom.alpha(0.5));
+      g.append('path').datum(data).attr('fill',color).attr('opacity',0.12).attr('d',areaFn);
+    }
+
+    // линия
+    const lineFn = d3.line().x(d=>x(d.rel_year)).y(d=>y(d[f]||0)).curve(d3.curveCatmullRom.alpha(0.5));
+    const path = g.append('path').datum(data)
+      .attr('fill','none').attr('stroke',color).attr('stroke-width',2)
+      .attr('stroke-linecap','round').attr('stroke-linejoin','round').attr('d',lineFn);
+    const len = path.node().getTotalLength();
+    path.attr('stroke-dasharray',`${len} ${len}`).attr('stroke-dashoffset',len)
+      .transition().duration(800).ease(d3.easeCubicOut).attr('stroke-dashoffset',0);
+
+    // точка пика
+    const peakD = data.reduce((a,b)=>(b[f]||0)>(a[f]||0)?b:a);
+    if((peakD[f]||0)>0){
+      g.append('circle').attr('cx',x(peakD.rel_year)).attr('cy',y(peakD[f]))
+       .attr('r',4).attr('fill',color).attr('opacity',0.9);
+    }
+  });
+
+  // аннотация медицины (только для полного датасета)
+  if(activeFields.has('Medicine') && showBand){
+    const medPeak = CYCLE_ALL.reduce((a,b)=>b.Medicine>a.Medicine?b:a);
+    if(medPeak.rel_year < 0){
+      g.append('text').attr('class','anno-text')
+       .attr('x',x(medPeak.rel_year)-6).attr('y',y(medPeak.Medicine)-10)
+       .attr('text-anchor','end')
+       .style('fill',COLORS.Medicine).style('font-size','11px').style('font-weight','500')
+       .text('Medicine peaks early');
+    }
+  }
+
+  // интерактивный оверлей
+  const vline = g.append('line').attr('y1',0).attr('y2',h)
+    .attr('stroke','var(--border2)').attr('stroke-width',1).attr('opacity',0);
+  g.append('rect').attr('width',w).attr('height',h).attr('fill','transparent')
+   .style('cursor','crosshair')
+   .on('mousemove',function(e){
+     const xv = x.invert(d3.pointer(e,this)[0]);
+     const idx = Math.min(Math.max(Math.round(xv+20),0),data.length-1);
+     const d = data[idx];
+     vline.attr('x1',x(d.rel_year)).attr('x2',x(d.rel_year)).attr('opacity',1);
+     const lbl = d.rel_year===0?'获奖年':d.rel_year>0?`获奖后 ${d.rel_year} 年`:`获奖前 ${Math.abs(d.rel_year)} 年`;
+     let html = `<div class="tt-label">${lbl}</div>`;
+     FIELDS.filter(f=>activeFields.has(f)).forEach(f=>{
+       html += `<div class="tt-row"><div class="tt-swatch" style="background:${COLORS[f]}"></div>${f}：<b>${(d[f]||0).toFixed(2)}</b> 篇</div>`;
+     });
+     yr_showTT(html,e);
+   }).on('mouseleave',()=>{vline.attr('opacity',0);yr_hideTT()});
+}
+
+function yr_redrawCycle(){
+  yr_drawChart1();
+}
+
+function yr_init(){
+  yr_makeLegend('yr_legend1');
+  yr_buildChips();
+}
+
+window._yr_init = function() {
+  yr_init();
+  _drawn.cyc = (_drawn.cyc || 0) + 1;
+  window._redraw_yr = function(){ yr_redrawCycle(); };
+};
+})();
+</script>
+
+<!-- 统一 CSV 加载 -->
+<script>
+Promise.all([
+  d3.csv('../../data/Chemistry publication record.csv'),
+  d3.csv('../../data/Medicine publication record.csv'),
+  d3.csv('../../data/Physics publication record.csv'),
+  d3.csv('../../data/Prize-winning paper record.csv')
+]).then(function(results) {
+  var chem=results[0], med=results[1], phys=results[2], prize=results[3];
+
+  setLoad(20,'计算年度发文量…');
+  window._vol_init(chem, med, phys);
+
+  setLoad(40,'计算获奖间隔…');
+  window._pg_init(prize);
+
+  setLoad(60,'计算生命周期…');
+  window._lc_init(chem, med, phys);
+
+  setLoad(80,'计算综合分析…');
+  window._idx_init(window._shared_gap||[], window._shared_life||[]);
+
+  setLoad(93,'初始化发文周期…');
+  window._yr_init();
+
+  document.getElementById('g-links').textContent = prize.length;
+  setLoad(100,'');
+  var ov = document.getElementById('loading-overlay');
+  ov.style.opacity = '0';
+  setTimeout(function(){ ov.style.display='none'; }, 400);
+  switchTab(document.querySelector('.tab-btn.active').dataset.tab);
+
+}).catch(function(err) {
+  console.error(err);
+  var ov = document.getElementById('loading-overlay');
+  var isFetch = /fetch|Failed to load|NetworkError|404/i.test(String(err && err.message));
+  var title = isFetch ? '⚠ Cannot load CSV' : '⚠ Failed to initialize';
+  var hint = isFetch
+    ? 'Place all CSV files in the same folder as this HTML,<br>'
+      + 'then open via <code style="background:var(--surface2);padding:2px 6px;border-radius:3px">python -m http.server</code>'
+    : 'Check the browser console for details, then reload.';
+  ov.innerHTML = '<div style="text-align:center;padding:32px">'
+    + '<div style="font-size:16px;color:#e53e3e;margin-bottom:10px">'+title+'</div>'
+    + '<div style="font-size:12px;color:var(--text3)">'+((err&&err.message)||err)+'</div>'
+    + '<div style="font-size:11px;color:var(--text3);margin-top:10px">'+hint+'</div></div>';
+});
+</script>
+</body>
+</html>

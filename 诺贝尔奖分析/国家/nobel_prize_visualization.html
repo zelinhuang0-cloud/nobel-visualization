@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Nobel Laureates Publication Ecosystem</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&display=swap">
+    <link rel="stylesheet" href="style/d3-design-system-cool.css">
+    <style>
+        .page { max-width: 1280px; padding: 24px 32px 64px; }
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+            gap: 24px;
+            margin: 0 0 24px;
+            padding: 24px 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: none;
+        }
+        .header-badge { margin-bottom: 8px; }
+        .hero-left h1 { margin: 0; }
+        .hero-left p { margin-top: 8px; max-width: 620px; }
+        .stats-row { justify-content: flex-end; }
+        .stat-pill {
+            min-width: 90px;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+        #world-map { height: 450px; }
+        #country-bar { height: 450px; }
+        #university-bar { height: 450px; }
+        .loading { text-align: center; padding: 100px 0; color: var(--text3); }
+        .error { color: #e74c3c; text-align: center; padding: 20px; }
+        .country-highlight { stroke: #333; stroke-width: 2; }
+        .country-active { filter: brightness(1.1); }
+        .visualization-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0; max-width: 1280px; margin: 0 auto; }
+        .stat-row { display: flex; justify-content: space-between; margin: 4px 0; }
+        .stat-label { opacity: 0.8; }
+        .stat-value { font-weight: bold; }
+        .page { padding: 22px 28px 54px; }
+        .hero { margin-bottom: 18px; padding: 20px 22px; }
+        .hero-left p { margin-top: 6px; font-size: 14px; line-height: 1.5; }
+        .stat-pill { border: 1px solid var(--border); background: var(--surface2); padding: 8px 12px; }
+        .visualization-container { gap: 18px; max-width: none; }
+        .card { border: 1px solid var(--border); border-radius: 8px; box-shadow: none; margin-bottom: 16px; }
+        .card-header { padding: 16px 18px 13px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+        .card-title { font-size: 17px; font-weight: 700; }
+        .card-body { padding: 20px; }
+        .controls { display: none; }
+        @media (max-width: 760px) {
+            .page { padding: 16px 16px 48px; }
+            .hero { grid-template-columns: 1fr; padding: 20px; }
+            .stats-row { justify-content: flex-start; }
+            .visualization-container { grid-template-columns: 1fr; }
+            .card[style] { grid-column: auto !important; }
+        }
+    </style>
+
+</head>
+<body>
+    <div class="page">
+        <div class="hero">
+            <div class="hero-left">
+                <div class="header-badge">Nobel Prize Data · 1900-2016</div>
+                <h1>全球分布</h1>
+                <p>物理学、化学、医学与生理学奖得主的国家与机构分布。</p>
+            </div>
+            <div class="stats-row">
+                <div class="stat-pill"><span>545</span>位得主</div>
+                <div class="stat-pill"><span>3</span>个学科</div>
+                <div class="stat-pill"><span>1900-2016</span>年份</div>
+            </div>
+        </div>
+        
+        <div class="controls" hidden>
+            <select id="category-select">
+                <option value="all">全部</option>
+                <option value="physics">物理学</option>
+                <option value="chemistry">化学</option>
+                <option value="medicine">医学与生理学</option>
+            </select>
+            <select id="year-range">
+                <option value="all">1900-2016</option>
+                <option value="1900-1950">1900-1950</option>
+                <option value="1950-2000">1950-2000</option>
+                <option value="2000-2016">2000-2016</option>
+            </select>
+        </div>
+                <div class="visualization-container">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">世界地图 - 诺贝尔奖分布</div>
+                </div>
+                <div class="card-body">
+                    <div id="world-map"><div class="loading">加载地图中...</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">诺贝尔奖数量前 20 国家</div>
+                </div>
+                <div class="card-body">
+                    <div id="country-bar"><div class="loading">加载中...</div></div>
+                </div>
+            </div>
+            <div class="card" style="grid-column: span 2;">
+                <div class="card-header">
+                    <div class="card-title">诺贝尔奖数量前 20 高校与机构</div>
+                </div>
+                <div class="card-body">
+                    <div id="university-bar"><div class="loading">加载中...</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let allData = [];
+        let correspondence = {};
+        let currentCategory = 'all';
+        let currentYearRange = 'all';
+        let worldMapData = null;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始加载数据...');
+            loadData();
+        });
+        
+        function loadData() {
+            const physicsUrl = '../data/Physics publication record.csv';
+            const chemistryUrl = '../data/Chemistry publication record.csv';
+            const medicineUrl = '../data/Medicine publication record.csv';
+            const corrUrl = '../data/correspondence.csv';
+            
+            console.log('开始加载CSV文件...');
+            
+            Promise.all([
+                loadCSV(physicsUrl, 'physics'),
+                loadCSV(chemistryUrl, 'chemistry'),
+                loadCSV(medicineUrl, 'medicine'),
+                loadCSV(corrUrl, 'correspondence'),
+                loadWorldMap()
+            ]).then(([physicsData, chemistryData, medicineData, corrData, mapData]) => {
+                console.log('所有数据加载完成');
+                worldMapData = mapData;
+                processData(physicsData, chemistryData, medicineData, corrData);
+            }).catch(err => {
+                console.error('加载数据失败:', err);
+                showError('数据加载失败，请检查控制台日志');
+            });
+        }
+        
+        function loadCSV(url, type) {
+            return new Promise((resolve, reject) => {
+                console.log(`正在加载: ${url}`);
+                
+                d3.csv(url).then(data => {
+                    console.log(`成功加载 ${url}: ${data.length} 行`);
+                    resolve({ data, type });
+                }).catch(err => {
+                    console.error(`加载 ${url} 失败:`, err);
+                    reject(err);
+                });
+            });
+        }
+        
+        function loadWorldMap() {
+            return new Promise((resolve, reject) => {
+                console.log('正在加载世界地图数据...');
+                d3.json('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson').then(data => {
+                    console.log('世界地图数据加载完成');
+                    
+                    const ukNames = data.features.filter(f => 
+                        f.properties.name && 
+                        (f.properties.name.toLowerCase().includes('kingdom') || 
+                         f.properties.name.toLowerCase().includes('britain') ||
+                         f.properties.name.toLowerCase().includes('uk'))
+                    ).map(f => f.properties.name);
+                    console.log('英国相关名称:', ukNames);
+                    
+                    resolve(data);
+                }).catch(err => {
+                    console.error('加载世界地图失败:', err);
+                    resolve(null);
+                });
+            });
+        }
+        
+        function processData(physicsResult, chemistryResult, medicineResult, corrResult) {
+            const physicsData = physicsResult.data;
+            const chemistryData = chemistryResult.data;
+            const medicineData = medicineResult.data;
+            const corrData = corrResult.data;
+            
+            console.log('开始处理对应关系数据...');
+            corrData.forEach(d => {
+                if (d.Affiliation && d.Country) {
+                    const key = d.Affiliation.toLowerCase().trim();
+                    correspondence[key] = d.Country;
+                }
+            });
+            console.log(`对应关系数据: ${Object.keys(correspondence).length} 条`);
+            
+            console.log('合并数据...');
+            physicsData.forEach(d => {
+                allData.push({...d, category: 'physics'});
+            });
+            chemistryData.forEach(d => {
+                allData.push({...d, category: 'chemistry'});
+            });
+            medicineData.forEach(d => {
+                allData.push({...d, category: 'medicine'});
+            });
+            
+            console.log(`原始数据总数: ${allData.length} 条`);
+            
+            console.log('清洗数据...');
+            allData = allData.filter(d => {
+                const prizeYear = parseInt(d['Prize year']);
+                return !isNaN(prizeYear) && prizeYear >= 1900 && prizeYear <= 2016 && d.Affiliation && d.Affiliation.trim() !== '';
+            }).map(d => {
+                const affiliation = d.Affiliation.toLowerCase().trim();
+                let country = correspondence[affiliation];
+                
+                if (!country) {
+                    const keys = Object.keys(correspondence);
+                    for (let key of keys) {
+                        if (affiliation.includes(key) || key.includes(affiliation)) {
+                            country = correspondence[key];
+                            break;
+                        }
+                    }
+                }
+                
+                return {
+                    ...d,
+                    'Prize year': parseInt(d['Prize year']),
+                    'Pub year': parseInt(d['Pub year']) || 0,
+                    AffiliationDisplay: formatInstitutionName(d.Affiliation),
+                    country: country || '未知'
+                };
+            });
+            
+            console.log(`清洗后数据: ${allData.length} 条`);
+            
+            const laureateSet = new Set(allData.map(d => d['Laureate ID']));
+            console.log(`获奖人数: ${laureateSet.size} 人`);
+            
+            initVisualizations();
+            updateVisualizations();
+        }
+
+        function formatInstitutionName(name) {
+            if (!name) return '';
+
+            const smallWords = new Set(['and', 'of', 'the', 'for', 'in', 'on', 'at', 'by', 'to', 'with']);
+            const acronyms = new Set(['MIT', 'UCLA', 'UCSF', 'UCSD', 'ETH', 'EPFL', 'CNRS', 'NIH', 'NASA', 'IBM', 'AT&T']);
+
+            return name
+                .toLowerCase()
+                .replace(/\s+/g, ' ')
+                .trim()
+                .split(' ')
+                .map((word, index) => {
+                    const clean = word.replace(/[^a-z0-9&]/gi, '').toUpperCase();
+                    if (acronyms.has(clean)) return clean;
+                    if (index > 0 && smallWords.has(word)) return word;
+                    return word
+                        .split('-')
+                        .map(part => part ? part.charAt(0).toUpperCase() + part.slice(1) : part)
+                        .join('-');
+                })
+                .join(' ');
+        }
+        
+        function showError(message) {
+            document.getElementById('world-map').innerHTML = `<div class="error">${message}</div>`;
+            document.getElementById('country-bar').innerHTML = `<div class="error">${message}</div>`;
+            document.getElementById('university-bar').innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        function initVisualizations() {
+            console.log('初始化可视化容器...');
+            
+            document.getElementById('world-map').innerHTML = '';
+            document.getElementById('country-bar').innerHTML = '';
+            document.getElementById('university-bar').innerHTML = '';
+            
+            d3.select('#world-map').append('svg').attr('width', '100%').attr('height', 450);
+            d3.select('#country-bar').append('svg').attr('width', '100%').attr('height', 450);
+            d3.select('#university-bar').append('svg').attr('width', '100%').attr('height', 450);
+            
+            console.log('可视化容器初始化完成');
+        }
+        
+        function updateVisualizations() {
+            console.log('更新可视化...');
+            
+            currentCategory = document.getElementById('category-select').value;
+            currentYearRange = document.getElementById('year-range').value;
+            
+            const filtered = filterData();
+            console.log(`筛选后数据: ${filtered.length} 条`);
+            
+            updateWorldMap(filtered);
+            updateCountryBar(filtered);
+            updateUniversityBar(filtered);
+        }
+        
+        function filterData() {
+            let filtered = [...allData];
+            
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(d => d.category === currentCategory);
+                console.log(`按学科筛选 (${currentCategory}): ${filtered.length} 条`);
+            }
+            
+            if (currentYearRange !== 'all') {
+                const [start, end] = currentYearRange.split('-').map(Number);
+                filtered = filtered.filter(d => d['Prize year'] >= start && d['Prize year'] <= end);
+                console.log(`按时间筛选 (${currentYearRange}): ${filtered.length} 条`);
+            }
+            
+            return filtered;
+        }
+        
+        function updateWorldMap(data) {
+            console.log('更新世界地图...');
+            
+            const container = document.getElementById('world-map');
+            if (!container) return;
+            
+            const svg = d3.select('#world-map svg');
+            svg.selectAll('*').remove();
+            
+            const width = container.clientWidth;
+            const height = 450;
+            
+            const countryStats = calculateCountryStats(data);
+            
+            console.log('国家统计数据:', countryStats);
+            
+            if (!worldMapData) {
+                drawSimpleMap(svg, width, height, countryStats);
+                return;
+            }
+            
+            const projection = d3.geoNaturalEarth1()
+                .scale(width / 5)
+                .translate([width / 2, height / 2]);
+            
+            const path = d3.geoPath().projection(projection);
+            
+            const maxCount = d3.max(Object.values(countryStats), d => d.total) || 1;
+            const displayMax = Math.min(maxCount, 30);
+            
+            const colorScale = d3.scaleSequential()
+                .domain([0, displayMax])
+                .interpolator(d3.interpolatePurples);
+            
+            let tooltip = d3.select('body').select('#tooltip');
+            if (tooltip.empty()) {
+                tooltip = d3.select('body').append('div').attr('id', 'tooltip');
+            }
+            
+            svg.selectAll('path')
+                .data(worldMapData.features)
+                .enter().append('path')
+                .attr('d', path)
+                .attr('fill', d => {
+                    const result = getCountryStatsWithName(d.properties.name, countryStats);
+                    return result && result.stats && result.stats.total > 0 ? colorScale(result.stats.total) : '#e0e0e0';
+                })
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 0.5)
+                .style('cursor', d => {
+                    const result = getCountryStatsWithName(d.properties.name, countryStats);
+                    return result && result.stats && result.stats.total > 0 ? 'pointer' : 'default';
+                })
+                .on('mouseover', function(event, d) {
+                    const originalName = d.properties.name;
+                    const countryName = getCountryName(originalName);
+                    const result = getCountryStatsWithName(originalName, countryStats);
+                    
+                    if (result && result.stats && result.stats.total > 0) {
+                        d3.select(this)
+                            .attr('stroke', '#333')
+                            .attr('stroke-width', 1.5);
+                        
+                        tooltip.style('opacity', 0.95)
+                            .html(`
+                                <h4>${result.chineseName}</h4>
+                                <div class="stat-row"><span class="stat-label">总获奖人数:</span><span class="stat-value">${result.stats.total}</span></div>
+                                <div class="stat-row"><span class="stat-label">物理学:</span><span class="stat-value">${result.stats.physics}</span></div>
+                                <div class="stat-row"><span class="stat-label">化学:</span><span class="stat-value">${result.stats.chemistry}</span></div>
+                                <div class="stat-row"><span class="stat-label">医学:</span><span class="stat-value">${result.stats.medicine}</span></div>
+                            `)
+                            .style('left', (event.pageX + 10) + 'px')
+                            .style('top', (event.pageY - 10) + 'px');
+                    }
+                })
+                .on('mouseout', function(event, d) {
+                    d3.select(this)
+                        .attr('stroke', '#ccc')
+                        .attr('stroke-width', 0.5);
+                    tooltip.style('opacity', 0);
+                });
+            
+            const legendWidth = 150;
+            const legend = svg.append('g').attr('transform', `translate(${width - 200}, 20)`);
+            
+            legend.append('text')
+                .attr('x', 0)
+                .attr('y', 15)
+                .style('font-size', '12px')
+                .style('font-weight', 'bold')
+                .text('获奖人数');
+            
+            const maxTick = Math.ceil(maxCount / 50) * 50;
+            const legendScale = d3.scaleLinear()
+                .domain([0, maxTick])
+                .range([0, legendWidth]);
+            
+            const tickValues = [];
+            for (let i = 0; i <= maxTick; i += 50) {
+                tickValues.push(i);
+            }
+            
+            const legendAxis = d3.axisBottom(legendScale)
+                .tickValues(tickValues)
+                .tickFormat(d => Math.round(d));
+            
+            legend.append('g')
+                .attr('transform', 'translate(0, 40)')
+                .call(legendAxis)
+                .selectAll('text')
+                .style('font-size', '10px');
+            
+            const gradient = svg.append('defs')
+                .append('linearGradient')
+                .attr('id', 'legendGradient')
+                .attr('x1', '0%')
+                .attr('y1', '0%')
+                .attr('x2', '100%')
+                .attr('y2', '0%');
+            
+            gradient.append('stop')
+                .attr('offset', '0%')
+                .attr('stop-color', '#e0e0e0');
+            
+            gradient.append('stop')
+                .attr('offset', '100%')
+                .attr('stop-color', colorScale(displayMax));
+            
+            legend.append('rect')
+                .attr('x', 0)
+                .attr('y', 20)
+                .attr('width', legendWidth)
+                .attr('height', 15)
+                .attr('fill', 'url(#legendGradient)')
+                .attr('stroke', '#ccc');
+            
+            console.log('世界地图更新完成');
+        }
+        
+        function drawSimpleMap(svg, width, height, countryStats) {
+            console.log('绘制简化世界地图...');
+            
+            svg.append('rect')
+                .attr('width', '100%')
+                .attr('height', height)
+                .attr('fill', '#e8f4f8');
+            
+            const countryPositions = [
+                {name: '美国', x: width * 0.58, y: height * 0.38, w: 120, h: 80},
+                {name: '加拿大', x: width * 0.56, y: height * 0.28, w: 100, h: 50},
+                {name: '巴西', x: width * 0.62, y: height * 0.7, w: 80, h: 60},
+                {name: '英国', x: width * 0.4, y: height * 0.28, w: 50, h: 35},
+                {name: '法国', x: width * 0.42, y: height * 0.31, w: 55, h: 35},
+                {name: '德国', x: width * 0.45, y: height * 0.3, w: 55, h: 35},
+                {name: '意大利', x: width * 0.47, y: height * 0.35, w: 40, h: 40},
+                {name: '西班牙', x: width * 0.41, y: height * 0.36, w: 40, h: 35},
+                {name: '俄罗斯', x: width * 0.55, y: height * 0.25, w: 180, h: 50},
+                {name: '中国', x: width * 0.75, y: height * 0.32, w: 90, h: 70},
+                {name: '日本', x: width * 0.85, y: height * 0.35, w: 45, h: 30},
+                {name: '印度', x: width * 0.72, y: height * 0.45, w: 70, h: 50},
+                {name: '澳大利亚', x: width * 0.78, y: height * 0.68, w: 80, h: 50},
+                {name: '瑞典', x: width * 0.44, y: height * 0.25, w: 35, h: 20},
+                {name: '挪威', x: width * 0.43, y: height * 0.23, w: 30, h: 25},
+                {name: '丹麦', x: width * 0.44, y: height * 0.26, w: 25, h: 18},
+                {name: '荷兰', x: width * 0.42, y: height * 0.29, w: 30, h: 20},
+                {name: '瑞士', x: width * 0.44, y: height * 0.33, w: 25, h: 20},
+                {name: '以色列', x: width * 0.55, y: height * 0.42, w: 25, h: 20},
+                {name: '韩国', x: width * 0.83, y: height * 0.38, w: 30, h: 25},
+                {name: '新加坡', x: width * 0.8, y: height * 0.52, w: 20, h: 15},
+                {name: '新西兰', x: width * 0.82, y: height * 0.78, w: 30, h: 20}
+            ];
+            
+            const maxCount = d3.max(Object.values(countryStats), d => d.total) || 1;
+            const displayMax = Math.min(maxCount, 30);
+            
+            const colorScale = d3.scaleSequential()
+                .domain([0, displayMax])
+                .interpolator(d3.interpolatePurples);
+            
+            let tooltip = d3.select('body').select('#tooltip');
+            if (tooltip.empty()) {
+                tooltip = d3.select('body').append('div').attr('id', 'tooltip');
+            }
+            
+            countryPositions.forEach(pos => {
+                const stats = countryStats[pos.name] || {total: 0, physics: 0, chemistry: 0, medicine: 0};
+                const color = stats.total > 0 ? colorScale(stats.total) : '#d0d0d0';
+                
+                svg.append('rect')
+                    .attr('x', pos.x)
+                    .attr('y', pos.y)
+                    .attr('width', pos.w)
+                    .attr('height', pos.h)
+                    .attr('fill', color)
+                    .attr('stroke', '#999')
+                    .attr('stroke-width', 1)
+                    .attr('rx', 4)
+                    .style('cursor', stats.total > 0 ? 'pointer' : 'default')
+                    .on('mouseover', function(event) {
+                        if (stats.total > 0) {
+                            d3.select(this).attr('stroke', '#333').attr('stroke-width', 2);
+                            tooltip.style('opacity', 0.95)
+                                .html(`
+                                    <h4>${pos.name}</h4>
+                                    <div class="stat-row"><span class="stat-label">总获奖人数:</span><span class="stat-value">${stats.total}</span></div>
+                                    <div class="stat-row"><span class="stat-label">物理学:</span><span class="stat-value">${stats.physics}</span></div>
+                                    <div class="stat-row"><span class="stat-label">化学:</span><span class="stat-value">${stats.chemistry}</span></div>
+                                    <div class="stat-row"><span class="stat-label">医学:</span><span class="stat-value">${stats.medicine}</span></div>
+                                `)
+                                .style('left', (event.pageX + 10) + 'px')
+                                .style('top', (event.pageY - 10) + 'px');
+                        }
+                    })
+                    .on('mouseout', function() {
+                        d3.select(this).attr('stroke', '#999').attr('stroke-width', 1);
+                        tooltip.style('opacity', 0);
+                    });
+                
+                svg.append('text')
+                    .attr('x', pos.x + pos.w / 2)
+                    .attr('y', pos.y + pos.h / 2 + 5)
+                    .attr('text-anchor', 'middle')
+                    .style('font-size', '11px')
+                    .style('fill', stats.total > 0 ? '#fff' : '#666')
+                    .style('font-weight', 'bold')
+                    .text(pos.name);
+                
+                if (stats.total > 0) {
+                    svg.append('text')
+                        .attr('x', pos.x + pos.w / 2)
+                        .attr('y', pos.y + pos.h / 2 + 20)
+                        .attr('text-anchor', 'middle')
+                        .style('font-size', '10px')
+                        .style('fill', '#fff')
+                        .text(stats.total);
+                }
+            });
+            
+            const legend = svg.append('g').attr('transform', `translate(${width - 150}, 20)`);
+            
+            legend.append('text')
+                .attr('x', 0)
+                .attr('y', 15)
+                .style('font-size', '12px')
+                .style('font-weight', 'bold')
+                .text('获奖人数');
+            
+            for (let i = 0; i <= 4; i++) {
+                const count = Math.round(maxCount * i / 4);
+                legend.append('rect')
+                    .attr('x', 0)
+                    .attr('y', i * 20 + 20)
+                    .attr('width', 30)
+                    .attr('height', 15)
+                    .attr('fill', i === 0 ? '#d0d0d0' : colorScale(count))
+                    .attr('stroke', '#ccc');
+                legend.append('text')
+                    .attr('x', 35)
+                    .attr('y', i * 20 + 31)
+                    .style('font-size', '10px')
+                    .text(count);
+            }
+            
+            console.log('简化世界地图绘制完成');
+        }
+        
+        function calculateCountryStats(data) {
+            const stats = {};
+            const laureateSet = new Set();
+            
+            data.forEach(d => {
+                const country = d.country;
+                const laureateId = d['Laureate ID'];
+                
+                if (!stats[country]) {
+                    stats[country] = {total: new Set(), physics: new Set(), chemistry: new Set(), medicine: new Set()};
+                }
+                
+                stats[country].total.add(laureateId);
+                stats[country][d.category].add(laureateId);
+            });
+            
+            Object.keys(stats).forEach(country => {
+                stats[country].total = stats[country].total.size;
+                stats[country].physics = stats[country].physics.size;
+                stats[country].chemistry = stats[country].chemistry.size;
+                stats[country].medicine = stats[country].medicine.size;
+            });
+            
+            return stats;
+        }
+        
+        function getCountryName(name) {
+            const nameMap = {
+                'United States of America': '美国',
+                'United States': '美国',
+                'USA': '美国',
+                'United Kingdom': '英国',
+                'Great Britain': '英国',
+                'UK': '英国',
+                'Germany': '德国',
+                'Federal Republic of Germany': '德国',
+                'France': '法国',
+                'Japan': '日本',
+                'Sweden': '瑞典',
+                'Switzerland': '瑞士',
+                'Canada': '加拿大',
+                'Netherlands': '荷兰',
+                'Kingdom of the Netherlands': '荷兰',
+                'Denmark': '丹麦',
+                'Israel': '以色列',
+                'Italy': '意大利',
+                'Australia': '澳大利亚',
+                'Russia': '俄罗斯',
+                'Russian Federation': '俄罗斯',
+                'Soviet Union': '俄罗斯',
+                'China': '中国',
+                'South Korea': '韩国',
+                'Republic of Korea': '韩国',
+                'Norway': '挪威',
+                'Brazil': '巴西',
+                'India': '印度',
+                'Singapore': '新加坡',
+                'New Zealand': '新西兰',
+                'Austria': '奥地利',
+                'Belgium': '比利时',
+                'Finland': '芬兰',
+                'Ireland': '爱尔兰',
+                'Poland': '波兰',
+                'Portugal': '葡萄牙',
+                'Spain': '西班牙',
+                'Czech Republic': '捷克',
+                'Hungary': '匈牙利',
+                'Greece': '希腊',
+                'Turkey': '土耳其',
+                'Egypt': '埃及',
+                'South Africa': '南非',
+                'Mexico': '墨西哥',
+                'Argentina': '阿根廷',
+                'Chile': '智利'
+            };
+            return nameMap[name] || name;
+        }
+        
+        function getCountryStatsWithName(countryName, countryStats) {
+            if (countryStats[countryName]) {
+                return { chineseName: countryName, stats: countryStats[countryName] };
+            }
+            
+            const exactMatches = {
+                'United States of America': '美国',
+                'United States': '美国',
+                'USA': '美国',
+                'United States of America (the)': '美国',
+                'United Kingdom': '英国',
+                'United Kingdom of Great Britain and Northern Ireland': '英国',
+                'Great Britain': '英国',
+                'Germany': '德国',
+                'Federal Republic of Germany': '德国',
+                'France': '法国',
+                'Japan': '日本',
+                'Sweden': '瑞典',
+                'Switzerland': '瑞士',
+                'Canada': '加拿大',
+                'Netherlands': '荷兰',
+                'Kingdom of the Netherlands': '荷兰',
+                'Denmark': '丹麦',
+                'Israel': '以色列',
+                'Italy': '意大利',
+                'Australia': '澳大利亚',
+                'Russian Federation': '俄罗斯',
+                'Russia': '俄罗斯',
+                'China': '中国',
+                'Republic of Korea': '韩国',
+                'South Korea': '韩国',
+                'Norway': '挪威',
+                'Brazil': '巴西',
+                'India': '印度',
+                'Singapore': '新加坡',
+                'New Zealand': '新西兰',
+                'Austria': '奥地利',
+                'Belgium': '比利时',
+                'Finland': '芬兰',
+                'Ireland': '爱尔兰',
+                'Poland': '波兰',
+                'Portugal': '葡萄牙',
+                'Spain': '西班牙',
+                'Czechia': '捷克',
+                'Czech Republic': '捷克',
+                'Hungary': '匈牙利',
+                'Greece': '希腊',
+                'Turkiye': '土耳其',
+                'Turkey': '土耳其',
+                'Egypt': '埃及',
+                'South Africa': '南非',
+                'Mexico': '墨西哥',
+                'Argentina': '阿根廷',
+                'Chile': '智利',
+                'France, Metropolitan': '法国',
+                'United States Minor Outlying Islands': '美国',
+                'Virgin Islands (U.S.)': '美国',
+                'Puerto Rico': '美国',
+                'Guam': '美国',
+                'Northern Mariana Islands': '美国',
+                'American Samoa': '美国',
+                'United States Virgin Islands': '美国',
+                'Scotland': '英国',
+                'Wales': '英国',
+                'Northern Ireland': '英国',
+                'England': '英国'
+            };
+            
+            if (exactMatches[countryName]) {
+                const chineseName = exactMatches[countryName];
+                if (countryStats[chineseName]) {
+                    return { chineseName: chineseName, stats: countryStats[chineseName] };
+                }
+            }
+            
+            const countryNameLower = countryName.toLowerCase();
+            if (countryNameLower.includes('united kingdom') || 
+                countryNameLower.includes('great britain') || 
+                countryNameLower.includes('britain') ||
+                countryNameLower.includes('england') ||
+                countryNameLower.includes('scotland') ||
+                countryNameLower.includes('wales') ||
+                countryNameLower.includes('northern ireland')) {
+                if (countryStats['英国']) {
+                    return { chineseName: '英国', stats: countryStats['英国'] };
+                }
+            }
+            
+            if (countryNameLower.includes('united states') || 
+                countryNameLower.includes('u.s.') ||
+                countryNameLower.includes('america') ||
+                countryNameLower.includes('usa')) {
+                if (countryStats['美国']) {
+                    return { chineseName: '美国', stats: countryStats['美国'] };
+                }
+            }
+            
+            console.log('未匹配的国家名称:', countryName);
+            return null;
+        }
+        
+        function updateCountryBar(data) {
+            console.log('更新国家柱状图...');
+            
+            const container = document.getElementById('country-bar');
+            if (!container) return;
+            
+            const svg = d3.select('#country-bar svg');
+            svg.selectAll('*').remove();
+            
+            const width = container.clientWidth;
+            const height = 450;
+            const margin = {top: 20, right: 30, bottom: 80, left: 80};
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+            
+            const countryCounts = d3.rollup(data,
+                v => new Set(v.map(d => d['Laureate ID'])).size,
+                d => d.country
+            );
+            
+            const sortedCountries = Array.from(countryCounts.entries())
+                .filter(([country]) => country !== '未知')
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 20);
+            
+            console.log('Top国家:', sortedCountries.slice(0, 5));
+            
+            const x = d3.scaleBand()
+                .domain(sortedCountries.map(d => d[0]))
+                .range([0, innerWidth])
+                .padding(0.2);
+            
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(sortedCountries, d => d[1]) || 1])
+                .range([innerHeight, 0]);
+            
+            const g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
+            
+            g.selectAll('.bar')
+                .data(sortedCountries)
+                .enter().append('rect')
+                .attr('class', 'bar')
+                .attr('x', d => x(d[0]))
+                .attr('y', d => y(d[1]))
+                .attr('width', x.bandwidth())
+                .attr('height', d => innerHeight - y(d[1]))
+                .attr('fill', '#667eea')
+                .on('mouseover', function() {
+                    d3.select(this).attr('fill', '#5a6fd6');
+                })
+                .on('mouseout', function() {
+                    d3.select(this).attr('fill', '#667eea');
+                });
+            
+            g.selectAll('.value-label')
+                .data(sortedCountries)
+                .enter().append('text')
+                .attr('class', 'value-label')
+                .attr('x', d => x(d[0]) + x.bandwidth() / 2)
+                .attr('y', d => y(d[1]) - 5)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '11px')
+                .style('fill', '#333')
+                .text(d => d[1]);
+            
+            g.append('g')
+                .attr('transform', `translate(0, ${innerHeight})`)
+                .call(d3.axisBottom(x))
+                .selectAll('text')
+                .attr('transform', 'rotate(-45)')
+                .style('text-anchor', 'end')
+                .attr('dx', '-8px')
+                .attr('dy', '4px')
+                .style('font-size', '11px');
+            
+            g.append('g')
+                .call(d3.axisLeft(y))
+                .style('font-size', '11px');
+            
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', -margin.left + 20)
+                .attr('x', -innerHeight / 2)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('fill', '#666')
+                .text('获奖人数');
+            
+            console.log('国家柱状图更新完成');
+        }
+        
+        function updateUniversityBar(data) {
+            console.log('更新大学柱状图...');
+            
+            const container = document.getElementById('university-bar');
+            if (!container) return;
+            
+            const svg = d3.select('#university-bar svg');
+            svg.selectAll('*').remove();
+            
+            const width = container.clientWidth;
+            const height = 450;
+            const margin = {top: 20, right: 30, bottom: 80, left: 180};
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+            
+            const universityCounts = d3.rollup(data,
+                v => ({
+                    count: new Set(v.map(d => d['Laureate ID'])).size,
+                    label: v[0].AffiliationDisplay || formatInstitutionName(v[0].Affiliation)
+                }),
+                d => d.Affiliation
+            );
+            
+            const sortedUniversities = Array.from(universityCounts.entries())
+                .filter(([name]) => name && name.trim() !== '')
+                .map(([name, info]) => ({
+                    name,
+                    label: info.label,
+                    count: info.count
+                }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 20);
+            
+            console.log('Top大学:', sortedUniversities.slice(0, 5));
+            
+            const y = d3.scaleBand()
+                .domain(sortedUniversities.map(d => d.label))
+                .range([0, innerHeight])
+                .padding(0.15);
+            
+            const x = d3.scaleLinear()
+                .domain([0, d3.max(sortedUniversities, d => d.count) || 1])
+                .range([0, innerWidth]);
+            
+            const g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
+            
+            g.selectAll('.bar')
+                .data(sortedUniversities)
+                .enter().append('rect')
+                .attr('class', 'bar')
+                .attr('y', d => y(d.label))
+                .attr('x', 0)
+                .attr('height', y.bandwidth())
+                .attr('width', d => x(d.count))
+                .attr('fill', '#764ba2')
+                .on('mouseover', function() {
+                    d3.select(this).attr('fill', '#6a418a');
+                })
+                .on('mouseout', function() {
+                    d3.select(this).attr('fill', '#764ba2');
+                });
+            
+            g.selectAll('.value-label')
+                .data(sortedUniversities)
+                .enter().append('text')
+                .attr('class', 'value-label')
+                .attr('x', d => x(d.count) + 5)
+                .attr('y', d => y(d.label) + y.bandwidth() / 2)
+                .attr('alignment-baseline', 'middle')
+                .style('font-size', '11px')
+                .style('fill', '#333')
+                .text(d => d.count);
+            
+            g.append('g')
+                .call(d3.axisLeft(y))
+                .style('font-size', '11px');
+            
+            g.append('g')
+                .attr('transform', `translate(0, ${innerHeight})`)
+                .call(d3.axisBottom(x))
+                .style('font-size', '11px');
+            
+            g.append('text')
+                .attr('x', innerWidth / 2)
+                .attr('y', innerHeight + 40)
+                .style('font-size', '12px')
+                .style('fill', '#666')
+                .attr('text-anchor', 'middle')
+                .text('获奖人数');
+            
+            console.log('大学柱状图更新完成');
+        }
+    </script>
+</body>
+</html>
